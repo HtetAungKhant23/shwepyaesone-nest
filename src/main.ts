@@ -1,27 +1,23 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable sort-imports-es6-autofix/sort-imports-es6 */
-// Import external modules
 import { winstonLoggerOptions } from '@config/logger.config';
 import { createDocument } from '@core/docs/swagger';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import * as morgan from 'morgan';
-import axios from 'axios';
 import { WinstonModule } from 'nest-winston';
 import { AppModule } from './app.module';
 
 const logger = new Logger('bootstrap');
 
-function keepAliveServer() {
-  const url = 'https://spendwise-r1l1.onrender.com/api/v1/health-check';
-  axios
-    .get(url)
-    .then(() => {})
-    .catch((e) => {
-      console.error(e);
-    });
-}
+// function keepAliveServer() {
+//   const url = 'https://spendwise-r1l1.onrender.com/api/v1/health-check';
+//   axios
+//     .get(url)
+//     .then(() => {})
+//     .catch((e) => {
+//       console.error(e);
+//     });
+// }
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -50,9 +46,9 @@ async function bootstrap() {
   }
   createDocument(app);
   await app.listen(PORT);
-  if (process.env.NODE_ENV !== 'development') {
-    setInterval(keepAliveServer, 300000);
-  }
+  // if (process.env.NODE_ENV !== 'development') {
+  //   setInterval(keepAliveServer, 300000);
+  // }
   logger.log(`Application listening on port ${PORT}`);
 }
 
