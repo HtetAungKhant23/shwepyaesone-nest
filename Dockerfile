@@ -1,31 +1,27 @@
-# Base image
-FROM node:18
+FROM node:lts-alpine AS builder
 
-# Create app directory
-WORKDIR /usr/src/app
+USER node
+WORKDIR /home/node
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
+COPY package*.json .
+RUN npm ci
 
-# Install app dependencies
-RUN npm install
+COPY --chown=node:node . .
+RUN npm run build && npm prune --omit=dev
 
-# Bundle app source
-COPY . .
 
-# Copy the .env and .env.development files
-COPY .env* ./
+# Final run stage
+FROM node:lts-alpine
 
-# Generate prisma types
-RUN npx prisma generate
+ENV NODE_ENV production
+USER node
+WORKDIR /home/node
 
-# Creates a "dist" folder with the production build
-RUN npm run build
+COPY --from=builder --chown=node:node /home/node/package*.json .
+COPY --from=builder --chown=node:node /home/node/node_modules ./node_modules
+COPY --from=builder --chown=node:node /home/node/dist ./dist
 
-EXPOSE ${PORT}
+ARG PORT
+EXPOSE ${PORT:-3000}
 
-# Define the environment variable for the port (default is 3000)
-ENV PORT 3000
-
-# Start the server using the production build
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main.js"]
