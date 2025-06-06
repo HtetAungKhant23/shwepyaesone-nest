@@ -19,9 +19,9 @@ export class PlanController {
   @ApiBody({ type: CreatePlanDto })
   async createPlan(@Body() dto: CreatePlanDto, @CurrentUser() user: IAuthUser) {
     try {
-      const plan = await this.planService.createPlan({ ...dto, userId: user.id });
+      await this.planService.createPlan({ ...dto, userId: user.id });
       return {
-        _data: plan,
+        _data: {},
         _metadata: {
           message: 'Plan successfully created.',
           statusCode: HttpStatus.OK,
