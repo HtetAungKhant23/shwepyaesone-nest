@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpStatus, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { IResponse } from '@app/core/interfaces/response.interface';
 import { ExceptionConstants } from '@app/core/exceptions/constants';
@@ -64,6 +64,29 @@ export class PlanController {
   @ApiBearerAuth()
   @UseGuards(UserAuthGuard)
   async getShoppings(@CurrentUser() user: IAuthUser): Promise<IResponse> {
+    try {
+      const shoppings = await this.planService.getShopping(user.id);
+      return {
+        _data: shoppings,
+        _metadata: {
+          message: 'Shoppings successfully fetched.',
+          statusCode: HttpStatus.OK,
+        },
+      };
+    } catch (err) {
+      throw new BadRequestException({
+        message: err.message,
+        cause: new Error(err),
+        code: ExceptionConstants.BadRequestCodes.UNEXPECTED_ERROR,
+        description: 'Failed to get shoppings',
+      });
+    }
+  }
+
+  @Patch('shopping')
+  @ApiBearerAuth()
+  @UseGuards(UserAuthGuard)
+  async updateShoppings(@CurrentUser() user: IAuthUser): Promise<IResponse> {
     try {
       const shoppings = await this.planService.getShopping(user.id);
       return {
