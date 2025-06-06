@@ -44,6 +44,11 @@ export class MealService {
         }),
       },
       include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
         mealIngredient: {
           select: {
             ingredient: {
