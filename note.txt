@@ -1,0 +1,60 @@
+  baseUrl = 'https://www.themealdb.com/api/json/v1/1';
+  baseUrlImage = 'https://www.themealdb.com/images';
+
+  getAllCategory = '/list.php?c=list';
+  getMeal = '/filter.php?c='; //add name
+  getMealDetails = '/lookup.php?i='; //add ID
+
+
+//https://www.themealdb.com/api/json/v1/1/categories.php  -- get category
+//https://www.themealdb.com/api/json/v1/1/filter.php?c=Chicken  -- get meal by category
+//https://www.themealdb.com/api/json/v1/1/lookup.php?i=53050 -- get meal detail by meal ID
+
+
+await prisma.meal.create({
+  data: {
+    name: "Spaghetti",
+    instruction: "Boil water, cook pasta, add sauce.",
+    imageUrl: "spaghetti.jpg",
+    mealIngredients: {
+      create: [
+        {
+          ingredient: {
+            connect: { id: "ingredient-id-1" }
+          },
+          measurement: {
+            connect: { id: "measurement-id-1" } // e.g., "grams"
+          }
+        },
+        {
+          ingredient: {
+            connect: { id: "ingredient-id-2" }
+          },
+          measurement: {
+            connect: { id: "measurement-id-2" } // e.g., "teaspoon"
+          }
+        }
+      ]
+    }
+  }
+});
+
+
+await prisma.plan.create({
+  data: {
+    recipeName: "Fried Rice",
+    recipeImage: "fried_rice.jpg",
+    categoryName: "Asian",
+    ingredients: [{ name: "rice", qty: 2 }],
+    instruction: "Cook everything.",
+    startDate: new Date(),
+    endDate: new Date(),
+    shopping: {
+      create: {
+        ingredients: [
+          { name: "rice", qty: 2, recipeName: "Fried Rice", bought: false }
+        ]
+      }
+    }
+  }
+});

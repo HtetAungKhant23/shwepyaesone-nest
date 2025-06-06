@@ -7,12 +7,12 @@ export class RegisterDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: String, required: true, default: '--@gmail.com' })
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ type: String, required: true })
+  @ApiProperty({ type: String, required: true, default: 'password' })
   @IsString()
   @IsNotEmpty()
   password: string;

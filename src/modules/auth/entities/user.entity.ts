@@ -1,21 +1,16 @@
-// import { ACCOUNT_TYPE } from '@prisma/client';
-
 export class UserEntity {
   name: string;
 
   email: string;
 
-  // accounts: IAccount[];
+  isVerify: boolean;
 
-  constructor(name: string, email: string) {
+  deleted: boolean;
+
+  constructor(name: string, email: string, isVerify: boolean, deleted: boolean) {
     this.name = name;
     this.email = email;
-    // this.accounts = accounts;
+    this.isVerify = isVerify;
+    this.deleted = deleted;
   }
 }
-
-// type IAccount = {
-//   name: string;
-//   amount: number;
-//   type: ACCOUNT_TYPE;
-// };

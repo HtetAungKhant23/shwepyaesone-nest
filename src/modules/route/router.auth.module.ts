@@ -8,6 +8,5 @@ import { UserStrategy } from '../auth/strategy/user.strategy';
 @Module({
   controllers: [AuthController],
   providers: [AuthService, EmailService, JwtService, UserStrategy],
-  exports: [AuthService],
 })
 export class RoutesAuthModule {}

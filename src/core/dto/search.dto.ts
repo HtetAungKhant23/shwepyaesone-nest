@@ -4,7 +4,7 @@ import { IsOptional } from 'class-validator';
 
 export class SearchDto {
   @ApiPropertyOptional({
-    example: 'U Myint Maung',
+    example: 'seafood',
   })
   @Type(() => String)
   @IsOptional()

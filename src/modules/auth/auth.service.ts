@@ -50,7 +50,7 @@ export class AuthService implements IAuthService {
     const existUser = await this.dbService.user.findUnique({
       where: {
         email: dto.email,
-        isDeleted: false,
+        deleted: false,
         isVerify: true,
       },
     });
@@ -74,14 +74,18 @@ export class AuthService implements IAuthService {
     return this.generateToken(existUser.id, existUser.email, process.env.USER_SECRET_KEY as string);
   }
 
-  async getMe(id: string): Promise<UserEntity> {
+  async getMe(id: string): Promise<UserEntity | null> {
     const user = await this.dbService.user.findUnique({
       where: {
         id,
       },
     });
 
-    return new UserEntity(user?.name || '', user?.email || '');
+    if (!user) {
+      return null;
+    }
+
+    return new UserEntity(user.name, user.email, user.isVerify, user.deleted);
   }
 
   async verifyEmail(dto: EmailVerifyDto): Promise<boolean> {
@@ -123,7 +127,7 @@ export class AuthService implements IAuthService {
     const existUser = await this.dbService.user.findUnique({
       where: {
         email,
-        isDeleted: false,
+        deleted: false,
         isVerify: false,
       },
     });

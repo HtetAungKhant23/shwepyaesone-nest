@@ -5,13 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: [
-    '@typescript-eslint/eslint-plugin',
-    'import',
-    'unused-imports',
-    'sort-imports-es6-autofix',
-    'prettier',
-  ],
+  plugins: ['@typescript-eslint/eslint-plugin', 'import', 'unused-imports', 'sort-imports-es6-autofix', 'prettier'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:import/recommended',
@@ -58,5 +52,6 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'import/extensions': 'off',
     'no-param-reassign': ['error', { props: false }],
+    'max-classes-per-file': ['error', { ignoreExpressions: true, max: 2 }],
   },
 };

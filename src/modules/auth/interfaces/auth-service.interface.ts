@@ -8,5 +8,5 @@ export interface IAuthService {
   verifyEmail(dto: EmailVerifyDto): Promise<boolean>;
   resendOtp(email: string): Promise<number>;
   login(dto: LoginDto): Promise<string>;
-  getMe(id: string): Promise<UserEntity>;
+  getMe(id: string): Promise<UserEntity | null>;
 }

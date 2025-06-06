@@ -4,6 +4,7 @@ import { ExceptionConstants } from '@app/core/exceptions/constants';
 import EmailService from '@app/shared/mail/mail.service';
 import { otpTemplate } from '@app/shared/mail/template/otp.template';
 import { CurrentUser, IAuthUser } from '@app/core/decorators/auth.decorators';
+import { IResponse } from '@app/core/interfaces/response.interface';
 import { AuthService } from './auth.service';
 import { IAuthService } from './interfaces/auth-service.interface';
 import { RegisterDto } from './dto/register.dto';
@@ -11,6 +12,7 @@ import { EmailVerifyDto } from './dto/email-verify.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserAuthGuard } from './guard/user.auth.guard';
+import { UserEntity } from './entities/user.entity';
 
 @ApiTags('Auth')
 @Controller({

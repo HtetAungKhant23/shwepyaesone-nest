@@ -6,8 +6,8 @@ export interface IResponseMetadata {
 }
 
 export interface IResponse {
-  _metadata?: IResponseMetadata;
-  _data?: Record<string, any>;
+  _metadata: IResponseMetadata;
+  _data: Record<string, any>;
 }
 
 export interface IResponsePaging {

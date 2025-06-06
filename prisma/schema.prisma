@@ -8,15 +8,16 @@ datasource db {
 }
 
 model User {
-  id        String  @id @default(uuid())
-  name      String
-  email     String  @unique
-  password  String
-  isVerify  Boolean @default(false) @map("is_verify")
-  isDeleted Boolean @default(false) @map("is_deleted")
+  id       String  @id @default(uuid())
+  name     String
+  email    String  @unique
+  password String
+  isVerify Boolean @default(false) @map("is_verify")
+  deleted  Boolean @default(false)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  plan      Plan[]
 
   @@map("users")
 }
@@ -31,4 +32,103 @@ model Otp {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("otps")
+}
+
+model Meal {
+  id          String   @id @default(uuid())
+  name        String
+  instruction String
+  imageUrl    String   @map("image_url")
+  youtubeLink String?  @map("youtube_link")
+  categoryId  String   @map("category_id")
+  category    Category @relation(fields: [categoryId], references: [id])
+
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  mealIngredient MealIngredient[]
+
+  @@map("meals")
+}
+
+model Category {
+  id          String @id @default(uuid())
+  name        String
+  imageUrl    String @map("image_url")
+  description String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  meal      Meal[]
+
+  @@map("categories")
+}
+
+model Ingredient {
+  id       String @id @default(uuid())
+  name     String
+  imageUrl String @map("image_url")
+
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  mealIngredient MealIngredient[]
+
+  @@map("ingredients")
+}
+
+model Measurement {
+  id   String @id @default(uuid())
+  unit String @unique
+
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  mealIngredient MealIngredient[]
+
+  @@map("measurements")
+}
+
+model MealIngredient {
+  mealId        String
+  ingredientId  String
+  measurementId String
+
+  meal        Meal        @relation(fields: [mealId], references: [id])
+  ingredient  Ingredient  @relation(fields: [ingredientId], references: [id])
+  measurement Measurement @relation(fields: [measurementId], references: [id])
+
+  @@id([mealId, ingredientId])
+  @@map("meal_ingredients")
+}
+
+model Plan {
+  id           String @id @default(uuid())
+  recipeName   String @map("recipe_name")
+  recipeImage  String @map("recipe_image")
+  categoryName String @map("category_name")
+  ingredients  Json // { name, qty }
+  instruction  String
+
+  startDate DateTime @map("start_date")
+  endDate   DateTime @map("end_date")
+  done      Boolean  @default(false)
+  deleted   Boolean  @default(false)
+
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+  shoppingId String?   @unique @map("shopping_id")
+  shopping   Shopping? @relation(fields: [shoppingId], references: [id])
+  userId     String    @map("user_id")
+  user       User      @relation(fields: [userId], references: [id])
+
+  @@map("plans")
+}
+
+model Shopping {
+  id          String @id @default(uuid())
+  ingredients Json // { name, qty, recipeName, bought }
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  plan      Plan?
+
+  @@map("shoppings")
 }
