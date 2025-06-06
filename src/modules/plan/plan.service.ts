@@ -12,6 +12,25 @@ export class PlanService {
       name: item.name,
       qty: item.qty,
     }));
+
+    const existPlan = await this.dbService.plan.findFirst({
+      where: {
+        recipeName: dto.recipeName,
+        recipeImage: dto.recipeImgUrl,
+        deleted: false,
+        done: false,
+        categoryName: dto.categoryName,
+        instruction: dto.instruction,
+        ingredients: {
+          equals: plainIngredients,
+        },
+      },
+    });
+
+    if (existPlan) {
+      throw new Error('plan already exist');
+    }
+
     const shoppingIngredients = dto.ingredients.map((item) => ({
       name: item.name,
       qty: item.qty,
