@@ -72,6 +72,11 @@ export class MealService {
         id,
       },
       include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
         mealIngredient: {
           select: {
             ingredient: {
