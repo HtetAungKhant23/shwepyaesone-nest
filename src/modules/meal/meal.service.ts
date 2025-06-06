@@ -43,10 +43,22 @@ export class MealService {
           categoryId: dto.categoryId,
         }),
       },
-      select: {
-        id: true,
-        name: true,
-        imageUrl: true,
+      include: {
+        mealIngredient: {
+          select: {
+            ingredient: {
+              select: {
+                name: true,
+                imageUrl: true,
+              },
+            },
+            measurement: {
+              select: {
+                unit: true,
+              },
+            },
+          },
+        },
       },
       take: dto.limit,
       skip: dto.offset,
