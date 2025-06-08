@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { GetPlansDto } from './dto/get-plans.dto';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
+import { CreateManualPlanDto } from './dto/create-manual-plan.dto';
 
 @Injectable()
 export class PlanService {
@@ -49,6 +50,58 @@ export class PlanService {
         shoppingId: shopping.id,
         recipeName: dto.recipeName,
         recipeImage: dto.recipeImgUrl,
+        categoryName: dto.categoryName,
+        instruction: dto.instruction,
+        ingredients: plainIngredients,
+        startDate: new Date().toISOString(),
+        endDate: new Date().toISOString(),
+      },
+    });
+  }
+
+  async createManualPlan(dto: CreateManualPlanDto & { userId: string; recipeImageUrl: any }) {
+    const ingredients = JSON.parse(dto.ingredients);
+
+    const plainIngredients = ingredients.map((item: { name: string; qty: string }) => ({
+      name: item.name,
+      qty: item.qty,
+    }));
+
+    const existPlan = await this.dbService.plan.findFirst({
+      where: {
+        recipeName: dto.recipeName,
+        recipeImage: dto.recipeImageUrl,
+        deleted: false,
+        done: false,
+        categoryName: dto.categoryName,
+        instruction: dto.instruction,
+        ingredients: {
+          equals: plainIngredients,
+        },
+      },
+    });
+
+    if (existPlan) {
+      throw new Error('plan already exist');
+    }
+
+    const shoppingIngredients = ingredients.map((item: { name: string; qty: string }) => ({
+      name: item.name,
+      qty: item.qty,
+      recipeName: dto.recipeName,
+      bought: false,
+    }));
+    const shopping = await this.dbService.shopping.create({
+      data: {
+        ingredients: shoppingIngredients,
+      },
+    });
+    return this.dbService.plan.create({
+      data: {
+        userId: dto.userId,
+        shoppingId: shopping.id,
+        recipeName: dto.recipeName,
+        recipeImage: dto.recipeImageUrl,
         categoryName: dto.categoryName,
         instruction: dto.instruction,
         ingredients: plainIngredients,

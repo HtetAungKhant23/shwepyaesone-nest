@@ -13,8 +13,8 @@ export class CloudinaryService {
     console.log('init cloudinary');
   }
 
-  async uploadImage(filePath: string, folderName: 'transaction' | 'profile'): Promise<UploadApiErrorResponse | UploadApiResponse> {
-    const res = await cloudinary.uploader.upload(filePath, { folder: `spendwise/${folderName}` }).catch((err) => {
+  async uploadImage(filePath: string, folderName: 'meals'): Promise<UploadApiErrorResponse | UploadApiResponse> {
+    const res = await cloudinary.uploader.upload(filePath, { folder: `mealmate/${folderName}` }).catch((err) => {
       console.log(err);
       return err;
     });
