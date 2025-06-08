@@ -13,11 +13,6 @@ export class CreateManualPlanDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  categoryName: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
   instruction: string;
 
   @ApiProperty({ type: String })

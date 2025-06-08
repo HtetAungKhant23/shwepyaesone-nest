@@ -143,6 +143,31 @@ export class PlanController {
     }
   }
 
+  // @Patch('shopping')
+  // @ApiBearerAuth()
+  // @UseGuards(UserAuthGuard)
+  // @ApiBody({ type: MakeIngredientsBoughtDto })
+  // async updateShoppings(@Body() dto: MakeIngredientsBoughtDto) {
+  //   try {
+  //     console.log(dto);
+  //     await this.planService.makeIngredientsBought(dto);
+  //     return {
+  //       _data: {},
+  //       _metadata: {
+  //         message: 'Bought status successfully change for shoppings.',
+  //         statusCode: HttpStatus.OK,
+  //       },
+  //     };
+  //   } catch (err) {
+  //     throw new BadRequestException({
+  //       message: err.message,
+  //       cause: new Error(err),
+  //       code: ExceptionConstants.BadRequestCodes.UNEXPECTED_ERROR,
+  //       description: 'Failed to make bought status for shoppings',
+  //     });
+  //   }
+  // }
+
   @Patch(':id')
   @ApiBearerAuth()
   @UseGuards(UserAuthGuard)
@@ -189,27 +214,4 @@ export class PlanController {
       });
     }
   }
-
-  // @Patch('shopping')
-  // @ApiBearerAuth()
-  // @UseGuards(UserAuthGuard)
-  // async updateShoppings(@CurrentUser() user: IAuthUser): Promise<IResponse> {
-  //   try {
-  //     const shoppings = await this.planService.getShopping(user.id);
-  //     return {
-  //       _data: shoppings,
-  //       _metadata: {
-  //         message: 'Shoppings successfully fetched.',
-  //         statusCode: HttpStatus.OK,
-  //       },
-  //     };
-  //   } catch (err) {
-  //     throw new BadRequestException({
-  //       message: err.message,
-  //       cause: new Error(err),
-  //       code: ExceptionConstants.BadRequestCodes.UNEXPECTED_ERROR,
-  //       description: 'Failed to get shoppings',
-  //     });
-  //   }
-  // }
 }

@@ -100,10 +100,10 @@ model MealIngredient {
 }
 
 model Plan {
-  id           String @id @default(uuid())
-  recipeName   String @map("recipe_name")
-  recipeImage  String @map("recipe_image")
-  categoryName String @map("category_name")
+  id           String  @id @default(uuid())
+  recipeName   String  @map("recipe_name")
+  recipeImage  String  @map("recipe_image")
+  categoryName String? @map("category_name")
   ingredients  Json // { name, qty }
   instruction  String
 

@@ -62,6 +62,8 @@ export class PlanService {
   async createManualPlan(dto: CreateManualPlanDto & { userId: string; recipeImageUrl: any }) {
     const ingredients = JSON.parse(dto.ingredients);
 
+    console.log({ ingredients });
+
     const plainIngredients = ingredients.map((item: { name: string; qty: string }) => ({
       name: item.name,
       qty: item.qty,
@@ -73,7 +75,6 @@ export class PlanService {
         recipeImage: dto.recipeImageUrl,
         deleted: false,
         done: false,
-        categoryName: dto.categoryName,
         instruction: dto.instruction,
         ingredients: {
           equals: plainIngredients,
@@ -102,7 +103,6 @@ export class PlanService {
         shoppingId: shopping.id,
         recipeName: dto.recipeName,
         recipeImage: dto.recipeImageUrl,
-        categoryName: dto.categoryName,
         instruction: dto.instruction,
         ingredients: plainIngredients,
         startDate: new Date().toISOString(),
@@ -175,4 +175,43 @@ export class PlanService {
       },
     });
   }
+
+  // async makeIngredientsBought(dto: MakeIngredientsBoughtDto) {
+  //   await Promise.all(
+  //     dto.ingredients.map(async (item) => {
+  //       const shopping = await this.dbService.shopping.findUnique({
+  //         where: {
+  //           id: item.id,
+  //         },
+  //       });
+
+  //       if (shopping?.ingredients) {
+  //         if (Array.isArray(shopping.ingredients))
+  //         {
+  //         }
+  //       }
+
+  //       const ingre = shopping?.ingredients?.valueOf();
+  //       const tt = JSON.parse(ingre as string);
+  //       console.log(tt[0]);
+
+  //       // const ingredients = JSON.parse(shopping?.ingredients?.toString() || '');
+  //       // console.log({ ingredients });
+
+  //       // ingredients.map(async (data: { name: string; qty: string; recipeName: string; bought: boolean }) => {
+  //       //   if (data.name === item.name && data.qty === item.qty) {
+  //       //     data.bought = item.bought;
+  //       //     await this.dbService.shopping.update({
+  //       //       where: {
+  //       //         id: item.id,
+  //       //       },
+  //       //       data: {},
+  //       //     });
+  //       //   }
+  //       // });
+  //       // console.log({ ingredients });
+  //     }),
+  //   );
+  //   return 'success';
+  // }
 }
