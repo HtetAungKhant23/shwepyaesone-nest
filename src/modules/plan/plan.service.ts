@@ -2,6 +2,7 @@ import { PrismaService } from '@app/shared/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { GetPlansDto } from './dto/get-plans.dto';
 import { CreatePlanDto } from './dto/create-plan.dto';
+import { UpdatePlanDto } from './dto/update-plan.dto';
 
 @Injectable()
 export class PlanService {
@@ -62,12 +63,6 @@ export class PlanService {
       where: {
         userId: dto.userId,
         deleted: false,
-        // ...(dto?.startDate && {
-        //   createdAt: {
-        //     gte: dayjs(dto.startDate).startOf('date').toISOString(),
-        //     lt: dayjs(dto.endDate).endOf('date').toISOString(),
-        //   },
-        // }),
       },
     });
   }
@@ -79,6 +74,51 @@ export class PlanService {
           userId,
           deleted: false,
         },
+      },
+    });
+  }
+
+  async updatePlan(dto: UpdatePlanDto & { planId: string }) {
+    const plainIngredients = dto.ingredients.map((item) => ({
+      name: item.name,
+      qty: item.qty,
+    }));
+
+    const updPlan = await this.dbService.plan.update({
+      where: {
+        id: dto.planId,
+      },
+      data: {
+        ingredients: plainIngredients,
+      },
+    });
+
+    const shoppingIngredients = dto.ingredients.map((item) => ({
+      name: item.name,
+      qty: item.qty,
+      recipeName: updPlan.recipeName,
+      bought: false,
+    }));
+
+    await this.dbService.shopping.update({
+      where: {
+        id: updPlan.shoppingId || '',
+      },
+      data: {
+        ingredients: shoppingIngredients,
+      },
+    });
+
+    return updPlan;
+  }
+
+  async deletePlan(planId: string) {
+    return this.dbService.plan.update({
+      where: {
+        id: planId,
+      },
+      data: {
+        deleted: true,
       },
     });
   }
