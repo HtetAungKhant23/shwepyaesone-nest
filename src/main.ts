@@ -5,9 +5,20 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import * as morgan from 'morgan';
 import { WinstonModule } from 'nest-winston';
+import axios from 'axios';
 import { AppModule } from './app.module';
 
 const logger = new Logger('bootstrap');
+
+function keepAliveServer() {
+  const url = 'https://meal-mate-o72n.onrender.com/api/v1/health-check';
+  axios
+    .get(url)
+    .then(() => {})
+    .catch((e) => {
+      console.error(e);
+    });
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -36,6 +47,7 @@ async function bootstrap() {
   }
   createDocument(app);
   await app.listen(PORT);
+  setInterval(keepAliveServer, 60000);
   logger.log(`Application listening on port ${PORT}`);
 }
 
