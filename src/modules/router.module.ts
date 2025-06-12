@@ -14,7 +14,7 @@ export class RouterModule {
       RoutesPlanModule,
       NestJsRouterModule.register([
         {
-          path: '/auth',
+          path: '/',
           module: RoutesAuthModule,
         },
       ]),

@@ -22,6 +22,7 @@ export class AuthService implements IAuthService {
     const existUser = await this.dbService.user.findUnique({
       where: {
         email: dto.email,
+        deleted: false,
       },
     });
 
@@ -86,6 +87,17 @@ export class AuthService implements IAuthService {
     }
 
     return new UserEntity(user.name, user.email, user.isVerify, user.deleted);
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.dbService.user.update({
+      where: {
+        id,
+      },
+      data: {
+        deleted: true,
+      },
+    });
   }
 
   async verifyEmail(dto: EmailVerifyDto): Promise<boolean> {

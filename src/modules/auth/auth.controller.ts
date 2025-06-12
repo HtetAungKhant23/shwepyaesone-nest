@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { ExceptionConstants } from '@app/core/exceptions/constants';
 import EmailService from '@app/shared/mail/mail.service';
@@ -12,7 +12,6 @@ import { ResendOtpDto } from './dto/resend-otp.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserAuthGuard } from './guard/user.auth.guard';
 
-@ApiTags('Auth')
 @Controller({
   version: '1',
 })
@@ -22,7 +21,8 @@ export class AuthController {
     private readonly mailService: EmailService,
   ) {}
 
-  @Get('me')
+  @ApiTags('Auth')
+  @Get('auth/me')
   @ApiBearerAuth()
   @UseGuards(UserAuthGuard)
   async getMe(@CurrentUser() user: IAuthUser) {
@@ -45,7 +45,32 @@ export class AuthController {
     }
   }
 
-  @Post('register')
+  @ApiTags('User')
+  @Delete('user')
+  @ApiBearerAuth()
+  @UseGuards(UserAuthGuard)
+  async delete(@CurrentUser() user: IAuthUser) {
+    try {
+      await this.authService.delete(user.id);
+      return {
+        _data: {},
+        _metadata: {
+          message: 'user successfully deleted.',
+          statusCode: HttpStatus.OK,
+        },
+      };
+    } catch (err) {
+      throw new BadRequestException({
+        message: err.message,
+        cause: new Error(err),
+        code: ExceptionConstants.BadRequestCodes.UNEXPECTED_ERROR,
+        description: 'Failed to delete user',
+      });
+    }
+  }
+
+  @ApiTags('Auth')
+  @Post('auth/register')
   @ApiBody({ type: RegisterDto, description: 'Register.' })
   async register(@Body() dto: RegisterDto) {
     try {
@@ -73,7 +98,8 @@ export class AuthController {
     }
   }
 
-  @Post('resend-otp')
+  @ApiTags('Auth')
+  @Post('auth/resend-otp')
   @ApiBody({ type: ResendOtpDto, description: 'Otp resend.' })
   async resendOtp(@Body() dto: ResendOtpDto) {
     try {
@@ -101,7 +127,8 @@ export class AuthController {
     }
   }
 
-  @Post('verify-email')
+  @ApiTags('Auth')
+  @Post('auth/verify-email')
   @ApiBody({ type: EmailVerifyDto, description: 'Verify Email.' })
   async verfiyEmail(@Body() dto: EmailVerifyDto) {
     try {
@@ -123,7 +150,8 @@ export class AuthController {
     }
   }
 
-  @Post('login')
+  @ApiTags('Auth')
+  @Post('auth/login')
   @ApiBody({ type: LoginDto, description: 'Login.' })
   async login(@Body() dto: LoginDto) {
     try {
