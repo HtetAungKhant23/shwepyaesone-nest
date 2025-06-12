@@ -8,6 +8,11 @@ export class MealService {
 
   async getCategories() {
     return this.dbService.category.findMany({
+      where: {
+        name: {
+          notIn: ['Starter', 'Side'],
+        },
+      },
       select: {
         id: true,
         name: true,

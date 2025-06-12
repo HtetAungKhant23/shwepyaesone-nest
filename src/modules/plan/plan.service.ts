@@ -116,6 +116,9 @@ export class PlanService {
         userId: dto.userId,
         deleted: false,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 
@@ -182,38 +185,34 @@ export class PlanService {
   }
 
   async makeIngredientsBought(dto: MakeIngredientsBoughtDto) {
-    await Promise.all(
-      dto.ingredients.map(async (item) => {
-        const shopping = await this.dbService.shopping.findUnique({
-          where: {
-            id: item.id,
-          },
-        });
+    await dto.ingredients.reduce(async (prevPromise, item) => {
+      await prevPromise;
 
-        const ingredients: {
-          name: string;
-          qty: string;
-          recipeName: string;
-          bought: boolean;
-        }[] = JSON.parse(shopping?.ingredients as string);
+      const shopping = await this.dbService.shopping.findUnique({
+        where: { id: item.id },
+      });
 
-        const updateIngredient = ingredients.map((ingre) => {
-          if (ingre.name === item.name && ingre.qty === item.qty) {
-            return { ...ingre, bought: item.bought };
-          }
-          return ingre;
-        });
+      if (!shopping) {
+        return;
+      }
 
-        await this.dbService.shopping.update({
-          where: {
-            id: item.id,
-          },
-          data: {
-            ingredients: JSON.stringify(updateIngredient),
-          },
-        });
-      }),
-    );
+      const ingredients: {
+        name: string;
+        qty: string;
+        recipeName: string;
+        bought: boolean;
+      }[] = JSON.parse(shopping.ingredients as string);
+
+      const updateIngredient = ingredients.map((ingre) =>
+        ingre.name === item.name && ingre.qty === item.qty ? { ...ingre, bought: item.bought } : ingre,
+      );
+
+      await this.dbService.shopping.update({
+        where: { id: item.id },
+        data: { ingredients: JSON.stringify(updateIngredient) },
+      });
+    }, Promise.resolve());
+
     return 'success';
   }
 }
