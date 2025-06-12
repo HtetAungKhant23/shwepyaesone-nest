@@ -90,12 +90,37 @@ export class AuthService implements IAuthService {
   }
 
   async delete(id: string): Promise<void> {
+    const user = await this.dbService.user.findUnique({
+      where: {
+        id,
+        deleted: false,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException({
+        message: `User not found`,
+        code: ExceptionConstants.BadRequestCodes.RESOURCE_NOT_FOUND,
+      });
+    }
+
+    const count = await this.dbService.user.count({
+      where: {
+        email: {
+          contains: user.email,
+          mode: 'insensitive',
+        },
+        deleted: true,
+      },
+    });
+
     await this.dbService.user.update({
       where: {
         id,
       },
       data: {
         deleted: true,
+        email: `deleted-${count + 1}-${user.email}`,
       },
     });
   }

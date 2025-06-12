@@ -21733,7 +21733,11 @@ const seedMeal = async () => {
   }
 };
 
-// seedCategory();
-// seedIngredient();
-// seedMeasurement();
-// seedMeal();
+async function seeder() {
+  // await seedCategory();
+  // await seedIngredient();
+  // await seedMeasurement();
+  // await seedMeal();
+}
+
+seeder();
