@@ -5,7 +5,6 @@ import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
 import { CreateManualPlanDto } from './dto/create-manual-plan.dto';
 import { MakeIngredientsBoughtDto } from './dto/update-shopping.dto';
-import { JsonArray } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PlanService {
