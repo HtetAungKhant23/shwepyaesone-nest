@@ -4,6 +4,8 @@ import { GetPlansDto } from './dto/get-plans.dto';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
 import { CreateManualPlanDto } from './dto/create-manual-plan.dto';
+import { MakeIngredientsBoughtDto } from './dto/update-shopping.dto';
+import { JsonArray } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class PlanService {
@@ -41,7 +43,7 @@ export class PlanService {
     }));
     const shopping = await this.dbService.shopping.create({
       data: {
-        ingredients: shoppingIngredients,
+        ingredients: JSON.stringify(shoppingIngredients),
       },
     });
     return this.dbService.plan.create({
@@ -61,8 +63,6 @@ export class PlanService {
 
   async createManualPlan(dto: CreateManualPlanDto & { userId: string; recipeImageUrl: any }) {
     const ingredients = JSON.parse(dto.ingredients);
-
-    console.log({ ingredients });
 
     const plainIngredients = ingredients.map((item: { name: string; qty: string }) => ({
       name: item.name,
@@ -94,7 +94,7 @@ export class PlanService {
     }));
     const shopping = await this.dbService.shopping.create({
       data: {
-        ingredients: shoppingIngredients,
+        ingredients: JSON.stringify(shoppingIngredients),
       },
     });
     return this.dbService.plan.create({
@@ -176,42 +176,23 @@ export class PlanService {
     });
   }
 
-  // async makeIngredientsBought(dto: MakeIngredientsBoughtDto) {
-  //   await Promise.all(
-  //     dto.ingredients.map(async (item) => {
-  //       const shopping = await this.dbService.shopping.findUnique({
-  //         where: {
-  //           id: item.id,
-  //         },
-  //       });
+  async makeIngredientsBought(dto: MakeIngredientsBoughtDto) {
+    await Promise.all(
+      dto.ingredients.map(async (item) => {
+        const shopping = await this.dbService.shopping.findUnique({
+          where: {
+            id: item.id,
+          },
+        });
 
-  //       if (shopping?.ingredients) {
-  //         if (Array.isArray(shopping.ingredients))
-  //         {
-  //         }
-  //       }
+        if (!shopping?.ingredients) {
+          return;
+        }
 
-  //       const ingre = shopping?.ingredients?.valueOf();
-  //       const tt = JSON.parse(ingre as string);
-  //       console.log(tt[0]);
-
-  //       // const ingredients = JSON.parse(shopping?.ingredients?.toString() || '');
-  //       // console.log({ ingredients });
-
-  //       // ingredients.map(async (data: { name: string; qty: string; recipeName: string; bought: boolean }) => {
-  //       //   if (data.name === item.name && data.qty === item.qty) {
-  //       //     data.bought = item.bought;
-  //       //     await this.dbService.shopping.update({
-  //       //       where: {
-  //       //         id: item.id,
-  //       //       },
-  //       //       data: {},
-  //       //     });
-  //       //   }
-  //       // });
-  //       // console.log({ ingredients });
-  //     }),
-  //   );
-  //   return 'success';
-  // }
+        // console.log(shopping?.ingredients);
+        console.log(JSON.parse(shopping.ingredients as string));
+      }),
+    );
+    return 'success';
+  }
 }

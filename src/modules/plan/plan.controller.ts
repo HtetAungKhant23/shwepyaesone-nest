@@ -13,7 +13,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiParam, ApiTags } from '@nestjs/swagger';
 import { IResponse } from '@app/core/interfaces/response.interface';
 import { ExceptionConstants } from '@app/core/exceptions/constants';
 import { CurrentUser, IAuthUser } from '@app/core/decorators/auth.decorators';
@@ -27,6 +27,7 @@ import { GetPlansDto } from './dto/get-plans.dto';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
 import { CreateManualPlanDto } from './dto/create-manual-plan.dto';
+import { MakeIngredientsBoughtDto } from './dto/update-shopping.dto';
 
 @Controller()
 @ApiTags('Plan')
@@ -60,7 +61,7 @@ export class PlanController {
         _data: {},
         _metadata: {
           message: 'Manual plan successfully created.',
-          statusCode: HttpStatus.OK,
+          statusCode: HttpStatus.CREATED,
         },
       };
     } catch (err) {
@@ -143,30 +144,30 @@ export class PlanController {
     }
   }
 
-  // @Patch('shopping')
-  // @ApiBearerAuth()
-  // @UseGuards(UserAuthGuard)
-  // @ApiBody({ type: MakeIngredientsBoughtDto })
-  // async updateShoppings(@Body() dto: MakeIngredientsBoughtDto) {
-  //   try {
-  //     console.log(dto);
-  //     await this.planService.makeIngredientsBought(dto);
-  //     return {
-  //       _data: {},
-  //       _metadata: {
-  //         message: 'Bought status successfully change for shoppings.',
-  //         statusCode: HttpStatus.OK,
-  //       },
-  //     };
-  //   } catch (err) {
-  //     throw new BadRequestException({
-  //       message: err.message,
-  //       cause: new Error(err),
-  //       code: ExceptionConstants.BadRequestCodes.UNEXPECTED_ERROR,
-  //       description: 'Failed to make bought status for shoppings',
-  //     });
-  //   }
-  // }
+  @Patch('shopping')
+  @ApiBearerAuth()
+  @UseGuards(UserAuthGuard)
+  @ApiBody({ type: MakeIngredientsBoughtDto })
+  async updateShoppings(@Body() dto: MakeIngredientsBoughtDto) {
+    try {
+      console.log({ dto });
+      await this.planService.makeIngredientsBought(dto);
+      return {
+        _data: {},
+        _metadata: {
+          message: 'Bought status successfully changed for shoppings.',
+          statusCode: HttpStatus.OK,
+        },
+      };
+    } catch (err) {
+      throw new BadRequestException({
+        message: err.message,
+        cause: new Error(err),
+        code: ExceptionConstants.BadRequestCodes.UNEXPECTED_ERROR,
+        description: 'Failed to make bought status for shoppings',
+      });
+    }
+  }
 
   @Patch(':id')
   @ApiBearerAuth()
