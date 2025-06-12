@@ -120,7 +120,7 @@ export class PlanService {
   }
 
   async getShopping(userId: string) {
-    return this.dbService.shopping.findMany({
+    const shoppings = await this.dbService.shopping.findMany({
       where: {
         plan: {
           userId,
@@ -128,6 +128,12 @@ export class PlanService {
         },
       },
     });
+
+    const parsedShoppings = shoppings.map((shopping) => {
+      return { ...shopping, ingredients: JSON.parse(shopping.ingredients as string) };
+    });
+
+    return parsedShoppings;
   }
 
   async updatePlan(dto: UpdatePlanDto & { planId: string }) {
@@ -157,7 +163,7 @@ export class PlanService {
         id: updPlan.shoppingId || '',
       },
       data: {
-        ingredients: shoppingIngredients,
+        ingredients: JSON.stringify(shoppingIngredients),
       },
     });
 
@@ -184,12 +190,28 @@ export class PlanService {
           },
         });
 
-        if (!shopping?.ingredients) {
-          return;
-        }
+        const ingredients: {
+          name: string;
+          qty: string;
+          recipeName: string;
+          bought: boolean;
+        }[] = JSON.parse(shopping?.ingredients as string);
 
-        // console.log(shopping?.ingredients);
-        console.log(JSON.parse(shopping.ingredients as string));
+        const updateIngredient = ingredients.map((ingre) => {
+          if (ingre.name === item.name && ingre.qty === item.qty) {
+            return { ...ingre, bought: item.bought };
+          }
+          return ingre;
+        });
+
+        await this.dbService.shopping.update({
+          where: {
+            id: item.id,
+          },
+          data: {
+            ingredients: JSON.stringify(updateIngredient),
+          },
+        });
       }),
     );
     return 'success';

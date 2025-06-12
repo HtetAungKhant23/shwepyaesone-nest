@@ -150,7 +150,6 @@ export class PlanController {
   @ApiBody({ type: MakeIngredientsBoughtDto })
   async updateShoppings(@Body() dto: MakeIngredientsBoughtDto) {
     try {
-      console.log({ dto });
       await this.planService.makeIngredientsBought(dto);
       return {
         _data: {},
