@@ -130,6 +130,9 @@ export class PlanService {
           deleted: false,
         },
       },
+      orderBy: {
+        updatedAt: 'desc',
+      },
     });
 
     const parsedShoppings = shoppings.map((shopping) => {
