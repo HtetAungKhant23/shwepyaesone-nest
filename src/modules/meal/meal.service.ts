@@ -10,8 +10,11 @@ export class MealService {
     return this.dbService.category.findMany({
       where: {
         name: {
-          notIn: ['Starter', 'Side'],
+          notIn: ['Goat'],
         },
+      },
+      orderBy: {
+        name: 'asc',
       },
       select: {
         id: true,

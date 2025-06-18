@@ -9,12 +9,12 @@ import { GetMealsDto } from './dto/get-meals.dto';
 
 @Controller()
 @ApiTags('Resources')
+@ApiBearerAuth()
+@UseGuards(UserAuthGuard)
 export class MealController {
   constructor(private mealService: MealService) {}
 
   @Get('categories')
-  @ApiBearerAuth()
-  @UseGuards(UserAuthGuard)
   async getCategories() {
     try {
       const categories = await this.mealService.getCategories();
@@ -36,8 +36,6 @@ export class MealController {
   }
 
   @Get('meals')
-  @ApiBearerAuth()
-  @UseGuards(UserAuthGuard)
   async getMeals(@Query() dto: GetMealsDto, @Pagination() { limit, offset }: IPagination): Promise<IResponsePaging> {
     try {
       const { meals, total } = await this.mealService.getMeals({ ...dto, limit, offset });
@@ -63,8 +61,6 @@ export class MealController {
   }
 
   @Get('meals/:id')
-  @ApiBearerAuth()
-  @UseGuards(UserAuthGuard)
   @ApiParam({ type: String, name: 'id' })
   async getMealDetail(@Param('id') id: string) {
     try {
