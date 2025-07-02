@@ -18,6 +18,7 @@ export class PlanService {
 
     const existPlan = await this.dbService.plan.findFirst({
       where: {
+        userId: dto.userId,
         recipeName: dto.recipeName,
         recipeImage: dto.recipeImgUrl,
         deleted: false,
@@ -70,6 +71,7 @@ export class PlanService {
 
     const existPlan = await this.dbService.plan.findFirst({
       where: {
+        userId: dto.userId,
         recipeName: dto.recipeName,
         recipeImage: dto.recipeImageUrl,
         deleted: false,
