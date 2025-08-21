@@ -6,8 +6,8 @@ import { registerAs } from '@nestjs/config';
  * Change this to suit your app!
  */
 export const SWAGGER_CONFIG: SwaggerConfig = {
-  title: 'MealMate',
-  description: 'MealMate is make a buying list for weekend meal-plan and build by using Nest.js.',
+  title: 'Shwe Pyae Sone',
+  description: 'Shwe Pyae Sone is a trusted partner for high-quality rice varieties and build by using Nest.js.',
   version: '1.0',
   tags: [],
 };

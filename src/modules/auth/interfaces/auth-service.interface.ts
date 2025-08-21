@@ -9,5 +9,4 @@ export interface IAuthService {
   resendOtp(email: string): Promise<number>;
   login(dto: LoginDto): Promise<string>;
   getMe(id: string): Promise<UserEntity | null>;
-  delete(id: string): Promise<void>;
 }

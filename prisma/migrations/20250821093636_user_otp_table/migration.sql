@@ -5,7 +5,7 @@ CREATE TABLE "users" (
     "email" STRING NOT NULL,
     "password" STRING NOT NULL,
     "is_verify" BOOL NOT NULL DEFAULT false,
-    "is_deleted" BOOL NOT NULL DEFAULT false,
+    "deleted" BOOL NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
