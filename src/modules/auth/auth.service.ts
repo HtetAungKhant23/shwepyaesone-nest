@@ -19,7 +19,7 @@ export class AuthService implements IAuthService {
   ) {}
 
   async register(dto: RegisterDto): Promise<number> {
-    const existUser = await this.dbService.user.findUnique({
+    const existUser = await this.dbService.admin.findUnique({
       where: {
         email: dto.email,
         deleted: false,
@@ -34,7 +34,7 @@ export class AuthService implements IAuthService {
     }
 
     if (!existUser) {
-      await this.dbService.user.create({
+      await this.dbService.admin.create({
         data: {
           name: dto.name,
           email: dto.email,
@@ -48,7 +48,7 @@ export class AuthService implements IAuthService {
   }
 
   async login(dto: LoginDto): Promise<string> {
-    const existUser = await this.dbService.user.findUnique({
+    const existUser = await this.dbService.admin.findUnique({
       where: {
         email: dto.email,
         deleted: false,
@@ -76,7 +76,7 @@ export class AuthService implements IAuthService {
   }
 
   async getMe(id: string): Promise<UserEntity | null> {
-    const user = await this.dbService.user.findUnique({
+    const user = await this.dbService.admin.findUnique({
       where: {
         id,
       },
@@ -107,7 +107,7 @@ export class AuthService implements IAuthService {
       });
     }
 
-    await this.dbService.user.update({
+    await this.dbService.admin.update({
       where: {
         email: dto.email,
       },
@@ -125,7 +125,7 @@ export class AuthService implements IAuthService {
   }
 
   async resendOtp(email: string): Promise<number> {
-    const existUser = await this.dbService.user.findUnique({
+    const existUser = await this.dbService.admin.findUnique({
       where: {
         email,
         deleted: false,

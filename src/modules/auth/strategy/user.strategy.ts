@@ -14,7 +14,7 @@ export class UserStrategy extends PassportStrategy(Strategy, 'user') {
   }
 
   async validate(payload: { id: string; email: string }) {
-    const user = await this.dbService.user.findUnique({ where: { id: payload.id } });
+    const user = await this.dbService.admin.findUnique({ where: { id: payload.id } });
 
     if (!user) {
       throw new Error('Invalid token.');

@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Admin {
   id       String  @id @default(uuid())
   name     String
   email    String  @unique
@@ -18,7 +18,7 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("users")
+  @@map("admins")
 }
 
 model Otp {
@@ -31,4 +31,96 @@ model Otp {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("otps")
+}
+
+model RiceCategory {
+  id          String  @id @default(uuid())
+  name        String // ဆန်ကြမ်း/ ဆန်ကွဲ/ ပေါ်ဆန်းမွှေး
+  description String?
+
+  rice Rice[]
+
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("rice_categories")
+}
+
+model Rice {
+  id   String @id @default(uuid())
+  name String // မကြမ်းထော/ ရွှေဘို
+
+  categoryId     String
+  category       RiceCategory     @relation(fields: [categoryId], references: [id])
+  riceBySupplier RiceBySupplier[]
+
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("rices")
+}
+
+model Inventory {
+  id             String           @id @default(uuid())
+  name           String
+  totalStock     Int              @default(0)
+  riceBySupplier RiceBySupplier[]
+
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("inventories")
+}
+
+model RiceBySupplier {
+  id String @id @default(uuid())
+
+  buyingPrice  Int @default(0)
+  sellingPrice Int @default(0)
+
+  totalStock  Int @default(0)
+  remainStock Int @default(0)
+
+  inventoryId String
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  riceId      String
+  rice        Rice      @relation(fields: [riceId], references: [id])
+  supplierId  String
+  supplier    Supplier  @relation(fields: [supplierId], references: [id])
+
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("rice_by_suppliers")
+}
+
+model Supplier {
+  id             String           @id @default(uuid())
+  name           String
+  phone          String           @unique
+  address        String?
+  riceBySupplier RiceBySupplier[]
+
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("suppliers")
+}
+
+model Customer {
+  id      String  @id @default(uuid())
+  name    String
+  phone   String  @unique
+  address String?
+
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("customers")
 }
