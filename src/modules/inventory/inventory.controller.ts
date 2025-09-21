@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { InventoryService } from './inventory.service';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
@@ -11,6 +11,18 @@ import { AddRiceDto } from './dto/add-rice.dto';
 @UseGuards(UserAuthGuard)
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
+
+  @Get('')
+  async getInventories() {
+    const inventories = await this.inventoryService.getInventories();
+    return {
+      _data: inventories,
+      _metadata: {
+        message: 'inventory successfully fetched.',
+        statusCode: HttpStatus.OK,
+      },
+    };
+  }
 
   @Post('')
   @ApiBody({ type: CreateInventoryDto })
