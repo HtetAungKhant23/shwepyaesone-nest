@@ -12,4 +12,8 @@ export class SupplierMapper {
       prismaData.address,
     );
   }
+
+  static toDomainArray(prismaData: Supplier[]): SupplierEntity[] {
+    return prismaData.map(this.toDomain);
+  }
 }

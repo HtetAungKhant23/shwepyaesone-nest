@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { IResponse } from '@app/core/interfaces/response.interface';
 import { UserAuthGuard } from '../auth/guard/user.auth.guard';
@@ -11,6 +11,18 @@ import { CreateSupplierDto } from './dto/create-supplier.dto';
 @UseGuards(UserAuthGuard)
 export class SupplierController {
   constructor(private readonly supplierService: SupplierService) {}
+
+  @Get('')
+  async getAllSupplier(): Promise<IResponse> {
+    const suppliers = await this.supplierService.getAllSupplier();
+    return {
+      _data: suppliers,
+      _metadata: {
+        message: 'supplier successfully fetched.',
+        statusCode: HttpStatus.OK,
+      },
+    };
+  }
 
   @Post('')
   @ApiBody({ type: CreateSupplierDto })
