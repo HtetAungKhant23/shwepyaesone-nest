@@ -44,6 +44,22 @@ export class RiceService {
     }
   }
 
+  async getAllRiceCategory(): Promise<RiceCategoryEntity[]> {
+    try {
+      const riceCate = await this.dbService.riceCategory.findMany({
+        where: {
+          deleted: false,
+        },
+      });
+      return RiceMapper.categoryToDomainArray(riceCate);
+    } catch (err) {
+      throw new BadRequestException({
+        message: err.message,
+        code: ExceptionConstants.BadRequestCodes.INVALID_INPUT,
+      });
+    }
+  }
+
   async createRiceCategory(dto: CreateRiceCategoryDto): Promise<RiceCategoryEntity> {
     try {
       const riceCate = await this.dbService.riceCategory.create({

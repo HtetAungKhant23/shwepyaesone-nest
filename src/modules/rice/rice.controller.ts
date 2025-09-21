@@ -19,7 +19,7 @@ export class RiceController {
       _data: rice,
       _metadata: {
         message: 'rice successfully fetched.',
-        statusCode: HttpStatus.CREATED,
+        statusCode: HttpStatus.OK,
       },
     };
   }
@@ -33,6 +33,18 @@ export class RiceController {
       _metadata: {
         message: 'rice successfully created.',
         statusCode: HttpStatus.CREATED,
+      },
+    };
+  }
+
+  @Get('category')
+  async getAllRiceCategory() {
+    const riceCate = await this.riceService.getAllRiceCategory();
+    return {
+      _data: riceCate,
+      _metadata: {
+        message: 'rice category successfully fetched.',
+        statusCode: HttpStatus.OK,
       },
     };
   }
