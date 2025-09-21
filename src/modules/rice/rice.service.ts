@@ -4,19 +4,21 @@ import { BadRequestException } from '@app/core/exceptions/bad-request.exception'
 import { Injectable } from '@nestjs/common';
 import { CreateRiceCategoryDto } from './dto/create-rice-category.dto';
 import { CreateRiceDto } from './dto/create-rice.dto';
+import { RiceCategoryEntity, RiceEntity } from './entity/rice.entity';
+import { RiceMapper } from './mapper/rice.mapper';
 
 @Injectable()
 export class RiceService {
   constructor(private readonly dbService: PrismaService) {}
 
-  async createRice(dto: CreateRiceDto) {
+  async getAllRice(): Promise<RiceEntity[]> {
     try {
-      return await this.dbService.rice.create({
-        data: {
-          name: dto.name,
-          categoryId: dto.categoryId,
+      const rice = await this.dbService.rice.findMany({
+        where: {
+          deleted: false,
         },
       });
+      return RiceMapper.toDomainArray(rice);
     } catch (err) {
       throw new BadRequestException({
         message: err.message,
@@ -25,14 +27,33 @@ export class RiceService {
     }
   }
 
-  async createRiceCategory(dto: CreateRiceCategoryDto) {
+  async createRice(dto: CreateRiceDto): Promise<RiceEntity> {
     try {
-      return await this.dbService.riceCategory.create({
+      const rice = await this.dbService.rice.create({
+        data: {
+          name: dto.name,
+          categoryId: dto.categoryId,
+        },
+      });
+      return RiceMapper.toDomain(rice);
+    } catch (err) {
+      throw new BadRequestException({
+        message: err.message,
+        code: ExceptionConstants.BadRequestCodes.INVALID_INPUT,
+      });
+    }
+  }
+
+  async createRiceCategory(dto: CreateRiceCategoryDto): Promise<RiceCategoryEntity> {
+    try {
+      const riceCate = await this.dbService.riceCategory.create({
         data: {
           name: dto.name,
           description: dto?.description,
         },
       });
+
+      return RiceMapper.categoryToDomain(riceCate);
     } catch (err) {
       throw new BadRequestException({
         message: err.message,

@@ -1,7 +1,7 @@
-import { Rice, RiceBySupplier, Supplier } from '@prisma/client';
+import { Rice, RiceBySupplier, RiceCategory, Supplier } from '@prisma/client';
 import { RiceBySupplierEntity } from '@app/modules/inventory/entity/inventory.entity';
 import { SupplierMapper } from '@app/modules/supplier/mapper/supplier.mapper';
-import { RiceEntity } from '../entity/rice.entity';
+import { RiceCategoryEntity, RiceEntity } from '../entity/rice.entity';
 
 export class RiceMapper {
   static toDomain(prismaData: Rice): RiceEntity {
@@ -12,6 +12,24 @@ export class RiceMapper {
     entity.updatedAt = prismaData.updatedAt;
     entity.category = prismaData.categoryId;
     return entity;
+  }
+
+  static toDomainArray(prismaData: Rice[]): RiceEntity[] {
+    return prismaData.map(this.toDomain);
+  }
+
+  static categoryToDomain(prismaData: RiceCategory): RiceCategoryEntity {
+    const entity = new RiceCategoryEntity();
+    entity.id = prismaData.id;
+    entity.name = prismaData.name;
+    entity.description = prismaData.description;
+    entity.createdAt = prismaData.createdAt;
+    entity.updatedAt = prismaData.updatedAt;
+    return entity;
+  }
+
+  static categoryToDomainArray(prismaData: RiceCategory[]): RiceCategoryEntity[] {
+    return prismaData.map(this.categoryToDomain);
   }
 
   static riceBySupplierToDomain(

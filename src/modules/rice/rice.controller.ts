@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { RiceService } from './rice.service';
 import { CreateRiceCategoryDto } from './dto/create-rice-category.dto';
@@ -11,6 +11,18 @@ import { UserAuthGuard } from '../auth/guard/user.auth.guard';
 @UseGuards(UserAuthGuard)
 export class RiceController {
   constructor(private readonly riceService: RiceService) {}
+
+  @Get('')
+  async getAllRice() {
+    const rice = await this.riceService.getAllRice();
+    return {
+      _data: rice,
+      _metadata: {
+        message: 'rice successfully fetched.',
+        statusCode: HttpStatus.CREATED,
+      },
+    };
+  }
 
   @Post('')
   @ApiBody({ type: CreateRiceDto })
