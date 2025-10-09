@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { IResponse } from '@app/core/interfaces/response.interface';
 import { UserAuthGuard } from '../auth/guard/user.auth.guard';
@@ -13,6 +13,7 @@ export class SupplierController {
   constructor(private readonly supplierService: SupplierService) {}
 
   @Get('')
+  @HttpCode(HttpStatus.OK)
   async getAllSupplier(): Promise<IResponse> {
     const suppliers = await this.supplierService.getAllSupplier();
     return {
@@ -26,6 +27,7 @@ export class SupplierController {
   }
 
   @Post('')
+  @HttpCode(HttpStatus.CREATED)
   @ApiBody({ type: CreateSupplierDto })
   async createSupplier(@Body() dto: CreateSupplierDto): Promise<IResponse> {
     const supplier = await this.supplierService.createSupplier(dto);

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { InventoryService } from './inventory.service';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
@@ -13,6 +13,7 @@ export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
 
   @Get('')
+  @HttpCode(HttpStatus.OK)
   async getInventories() {
     const inventories = await this.inventoryService.getInventories();
     return {
@@ -26,6 +27,7 @@ export class InventoryController {
   }
 
   @Post('')
+  @HttpCode(HttpStatus.CREATED)
   @ApiBody({ type: CreateInventoryDto })
   async createInventory(@Body() dto: CreateInventoryDto) {
     const inventory = await this.inventoryService.createInventory(dto);
@@ -40,6 +42,7 @@ export class InventoryController {
   }
 
   @Post(':id/add-rice')
+  @HttpCode(HttpStatus.OK)
   @ApiParam({ name: 'id', type: String })
   @ApiBody({ type: AddRiceDto })
   async addRice(@Body() dto: AddRiceDto, @Param('id') id: string) {
@@ -49,7 +52,7 @@ export class InventoryController {
       _metadata: {
         success: true,
         message: 'new rice successfully added to inventory.',
-        statusCode: HttpStatus.CREATED,
+        statusCode: HttpStatus.OK,
       },
     };
   }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { RiceService } from './rice.service';
 import { CreateRiceCategoryDto } from './dto/create-rice-category.dto';
@@ -13,6 +13,7 @@ export class RiceController {
   constructor(private readonly riceService: RiceService) {}
 
   @Get('')
+  @HttpCode(HttpStatus.OK)
   async getAllRice() {
     const rice = await this.riceService.getAllRice();
     return {
@@ -26,6 +27,7 @@ export class RiceController {
   }
 
   @Post('')
+  @HttpCode(HttpStatus.CREATED)
   @ApiBody({ type: CreateRiceDto })
   async createRice(@Body() dto: CreateRiceDto) {
     const rice = await this.riceService.createRice(dto);
@@ -40,6 +42,7 @@ export class RiceController {
   }
 
   @Get('category')
+  @HttpCode(HttpStatus.OK)
   async getAllRiceCategory() {
     const riceCate = await this.riceService.getAllRiceCategory();
     return {
@@ -53,6 +56,7 @@ export class RiceController {
   }
 
   @Post('category')
+  @HttpCode(HttpStatus.CREATED)
   @ApiBody({ type: CreateRiceCategoryDto })
   async createRiceCategory(@Body() dto: CreateRiceCategoryDto) {
     const riceCate = await this.riceService.createRiceCategory(dto);
