@@ -30,6 +30,7 @@ export interface IHttpInternalServerErrorExceptionResponse {
 
 export interface IHttpUnauthorizedExceptionResponse {
   _metadata: {
+    success: boolean;
     code: number;
     message: string;
     description?: string;
@@ -52,6 +53,7 @@ export interface IHttpForbiddenExceptionResponse {
 
 export interface IHttpNotFoundExceptionResponse {
   _metadata: {
+    success: boolean;
     code: number;
     message: string;
     description?: string;

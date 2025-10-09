@@ -70,6 +70,7 @@ export class UnauthorizedException extends HttpException {
   generateHttpResponseBody = (message?: string): IHttpUnauthorizedExceptionResponse => {
     return {
       _metadata: {
+        success: false,
         message: message || this.message,
         description: this.description,
         timestamp: this.timestamp,

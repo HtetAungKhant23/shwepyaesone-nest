@@ -14,9 +14,8 @@ export class UnauthorizedExceptionFilter implements ExceptionFilter {
     const { httpAdapter } = this.httpAdapterHost;
 
     const ctx = host.switchToHttp();
-    const request = ctx.getRequest<Request>();
     const httpStatus = exception.getStatus();
-    const traceId = request.headers.get('x-request-id') || '';
+    const traceId = '';
     exception.setTraceId(traceId);
     exception.setPath(httpAdapter.getRequestUrl(ctx.getRequest()));
 

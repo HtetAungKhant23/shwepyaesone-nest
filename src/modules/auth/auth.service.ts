@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@app/shared/prisma/prisma.service';
 import { BadRequestException } from '@app/core/exceptions/bad-request.exception';
+import { NotFoundException, UnauthorizedException } from '@app/core/exceptions';
 import { ExceptionConstants } from '@app/core/exceptions/constants';
 import { hashText, verifyText } from '@app/utils/hashText';
 import { JwtService } from '@nestjs/jwt';
@@ -57,7 +58,7 @@ export class AuthService implements IAuthService {
     });
 
     if (!existUser) {
-      throw new BadRequestException({
+      throw new NotFoundException({
         message: `User not found`,
         code: ExceptionConstants.BadRequestCodes.RESOURCE_NOT_FOUND,
       });
@@ -66,7 +67,7 @@ export class AuthService implements IAuthService {
     const matchPw = await verifyText(existUser.password, dto.password);
 
     if (!matchPw) {
-      throw new BadRequestException({
+      throw new UnauthorizedException({
         message: `Wrong credential`,
         code: ExceptionConstants.BadRequestCodes.INVALID_INPUT,
       });
@@ -75,7 +76,7 @@ export class AuthService implements IAuthService {
     return this.generateToken(existUser.id, existUser.email, process.env.USER_SECRET_KEY as string);
   }
 
-  async getMe(id: string): Promise<UserEntity | null> {
+  async getMe(id: string): Promise<UserEntity> {
     const user = await this.dbService.admin.findUnique({
       where: {
         id,
@@ -83,31 +84,44 @@ export class AuthService implements IAuthService {
     });
 
     if (!user) {
-      return null;
+      throw new NotFoundException({
+        message: 'User not found',
+        code: ExceptionConstants.BadRequestCodes.RESOURCE_NOT_FOUND,
+      });
     }
 
     return new UserEntity(user.name, user.email, user.isVerify, user.deleted);
   }
 
-  async verifyEmail(dto: EmailVerifyDto): Promise<boolean> {
+  async verifyEmail(dto: EmailVerifyDto): Promise<string> {
     const otp = await this.dbService.otp.findUnique({
       where: {
         email: dto.email,
-        code: dto.code,
-        expiredAt: {
-          gte: dayjs().toDate(),
-        },
       },
     });
 
     if (!otp) {
       throw new BadRequestException({
-        message: `Invalid code`,
+        message: `Invalid format`,
         code: ExceptionConstants.BadRequestCodes.RESOURCE_NOT_FOUND,
       });
     }
 
-    await this.dbService.admin.update({
+    if (otp.code !== dto.code) {
+      throw new UnauthorizedException({
+        message: `Invalid OTP code`,
+        code: ExceptionConstants.BadRequestCodes.RESOURCE_NOT_FOUND,
+      });
+    }
+
+    if (dayjs().toDate() >= otp.expiredAt) {
+      throw new UnauthorizedException({
+        message: `OTP expired`,
+        code: ExceptionConstants.BadRequestCodes.RESOURCE_NOT_FOUND,
+      });
+    }
+
+    const userVerified = await this.dbService.admin.update({
       where: {
         email: dto.email,
       },
@@ -121,7 +135,7 @@ export class AuthService implements IAuthService {
       },
     });
 
-    return true;
+    return this.generateToken(userVerified.id, userVerified.email, process.env.USER_SECRET_KEY as string);
   }
 
   async resendOtp(email: string): Promise<number> {
@@ -134,7 +148,7 @@ export class AuthService implements IAuthService {
     });
     if (!existUser) {
       throw new BadRequestException({
-        message: `Email not found`,
+        message: `User not found`,
         code: ExceptionConstants.BadRequestCodes.RESOURCE_NOT_FOUND,
       });
     }
@@ -152,11 +166,11 @@ export class AuthService implements IAuthService {
       create: {
         email,
         code: code.toString(),
-        expiredAt: dayjs(Date.now()).add(1, 'minute').toDate(),
+        expiredAt: dayjs(Date.now()).add(3, 'minute').toDate(),
       },
       update: {
         code: code.toString(),
-        expiredAt: dayjs(Date.now()).add(1, 'minute').toDate(),
+        expiredAt: dayjs(Date.now()).add(3, 'minute').toDate(),
       },
     });
 
@@ -168,7 +182,7 @@ export class AuthService implements IAuthService {
       { id, email },
       {
         secret: secretKey,
-        expiresIn: '1m',
+        expiresIn: '1h',
       },
     );
     return token;

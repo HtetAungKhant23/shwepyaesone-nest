@@ -1,7 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
 import { ExceptionConstants } from '@core/exceptions/constants';
 import { HttpAdapterHost } from '@nestjs/core';
-import { Request } from 'express';
 
 interface ErrorResponse {
   response: {
@@ -23,8 +22,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const { httpAdapter } = this.httpAdapterHost;
     const specificException = exception as ErrorResponse;
     const ctx = host.switchToHttp();
-    const request = ctx.getRequest<Request>();
-    const traceId = request.headers['x-request-id'] || '';
+    // const request = ctx.getRequest<Request>();
+    const traceId = '';
     const httpStatus = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
     // console.log(exception);
     const responseBody = {

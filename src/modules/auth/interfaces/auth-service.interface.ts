@@ -5,7 +5,7 @@ import { UserEntity } from '../entities/user.entity';
 
 export interface IAuthService {
   register(dto: RegisterDto): Promise<number>;
-  verifyEmail(dto: EmailVerifyDto): Promise<boolean>;
+  verifyEmail(dto: EmailVerifyDto): Promise<string>;
   resendOtp(email: string): Promise<number>;
   login(dto: LoginDto): Promise<string>;
   getMe(id: string): Promise<UserEntity | null>;
