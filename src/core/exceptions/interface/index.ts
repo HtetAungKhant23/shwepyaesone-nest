@@ -7,6 +7,7 @@ export interface IException {
 
 export interface IHttpBadRequestExceptionResponse {
   _metadata: {
+    success: boolean;
     code: number;
     message: string;
     description?: string;

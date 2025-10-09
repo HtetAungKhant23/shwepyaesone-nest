@@ -18,6 +18,7 @@ export class RiceController {
     return {
       _data: rice,
       _metadata: {
+        success: true,
         message: 'rice successfully fetched.',
         statusCode: HttpStatus.OK,
       },
@@ -31,6 +32,7 @@ export class RiceController {
     return {
       _data: rice,
       _metadata: {
+        success: true,
         message: 'rice successfully created.',
         statusCode: HttpStatus.CREATED,
       },
@@ -43,6 +45,7 @@ export class RiceController {
     return {
       _data: riceCate,
       _metadata: {
+        success: true,
         message: 'rice category successfully fetched.',
         statusCode: HttpStatus.OK,
       },
@@ -56,6 +59,7 @@ export class RiceController {
     return {
       _data: riceCate,
       _metadata: {
+        success: true,
         message: 'rice category successfully created.',
         statusCode: HttpStatus.CREATED,
       },

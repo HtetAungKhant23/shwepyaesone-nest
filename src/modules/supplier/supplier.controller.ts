@@ -18,6 +18,7 @@ export class SupplierController {
     return {
       _data: suppliers,
       _metadata: {
+        success: true,
         message: 'supplier successfully fetched.',
         statusCode: HttpStatus.OK,
       },
@@ -31,6 +32,7 @@ export class SupplierController {
     return {
       _data: supplier,
       _metadata: {
+        success: true,
         message: 'supplier successfully created.',
         statusCode: HttpStatus.CREATED,
       },

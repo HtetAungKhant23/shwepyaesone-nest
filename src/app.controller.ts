@@ -8,6 +8,7 @@ export class AppController {
     return {
       _data: new Date(),
       _metadata: {
+        success: true,
         message: 'Health check success.',
         statusCode: HttpStatus.OK,
       },

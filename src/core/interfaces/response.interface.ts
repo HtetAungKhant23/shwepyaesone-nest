@@ -1,6 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 
 export interface IResponseMetadata {
+  success: boolean;
   statusCode?: HttpStatus;
   message?: string;
 }

@@ -18,6 +18,7 @@ export class InventoryController {
     return {
       _data: inventories,
       _metadata: {
+        success: true,
         message: 'inventory successfully fetched.',
         statusCode: HttpStatus.OK,
       },
@@ -31,6 +32,7 @@ export class InventoryController {
     return {
       _data: inventory,
       _metadata: {
+        success: true,
         message: 'inventory successfully created.',
         statusCode: HttpStatus.CREATED,
       },
@@ -45,6 +47,7 @@ export class InventoryController {
     return {
       _data: riceAddedToInventory,
       _metadata: {
+        success: true,
         message: 'new rice successfully added to inventory.',
         statusCode: HttpStatus.CREATED,
       },

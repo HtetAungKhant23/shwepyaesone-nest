@@ -1,9 +1,10 @@
-import { BadRequestException, Body, Controller, Get, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Inject, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { ExceptionConstants } from '@app/core/exceptions/constants';
 import EmailService from '@app/shared/mail/mail.service';
 import { otpTemplate } from '@app/shared/mail/template/otp.template';
 import { CurrentUser, IAuthUser } from '@app/core/decorators/auth.decorators';
+import { BadRequestException } from '@app/core/exceptions/bad-request.exception';
 import { AuthService } from './auth.service';
 import { IAuthService } from './interfaces/auth-service.interface';
 import { RegisterDto } from './dto/register.dto';
@@ -22,7 +23,7 @@ export class AuthController {
     private readonly mailService: EmailService,
   ) {}
 
-  @Get('auth/me')
+  @Get('me')
   @ApiBearerAuth()
   @UseGuards(UserAuthGuard)
   async getMe(@CurrentUser() user: IAuthUser) {
@@ -31,6 +32,7 @@ export class AuthController {
       return {
         _data: res,
         _metadata: {
+          success: true,
           message: 'Me successfully fetched.',
           statusCode: HttpStatus.OK,
         },
@@ -45,7 +47,7 @@ export class AuthController {
     }
   }
 
-  @Post('auth/register')
+  @Post('register')
   @ApiBody({ type: RegisterDto, description: 'Register.' })
   async register(@Body() dto: RegisterDto) {
     try {
@@ -59,6 +61,7 @@ export class AuthController {
       return {
         _data: {},
         _metadata: {
+          success: true,
           message: 'Register success.',
           statusCode: HttpStatus.CREATED,
         },
@@ -73,7 +76,7 @@ export class AuthController {
     }
   }
 
-  @Post('auth/resend-otp')
+  @Post('resend-otp')
   @ApiBody({ type: ResendOtpDto, description: 'Otp resend.' })
   async resendOtp(@Body() dto: ResendOtpDto) {
     try {
@@ -87,6 +90,7 @@ export class AuthController {
       return {
         _data: {},
         _metadata: {
+          success: true,
           message: 'Resend otp success.',
           statusCode: HttpStatus.NO_CONTENT,
         },
@@ -101,7 +105,7 @@ export class AuthController {
     }
   }
 
-  @Post('auth/verify-email')
+  @Post('verify-email')
   @ApiBody({ type: EmailVerifyDto, description: 'Verify Email.' })
   async verfiyEmail(@Body() dto: EmailVerifyDto) {
     try {
@@ -109,6 +113,7 @@ export class AuthController {
       return {
         _data: { verify },
         _metadata: {
+          success: true,
           message: 'Email verify success.',
           statusCode: HttpStatus.OK,
         },
@@ -123,7 +128,7 @@ export class AuthController {
     }
   }
 
-  @Post('auth/login')
+  @Post('login')
   @ApiBody({ type: LoginDto, description: 'Login.' })
   async login(@Body() dto: LoginDto) {
     try {
@@ -131,6 +136,7 @@ export class AuthController {
       return {
         _data: { token },
         _metadata: {
+          success: true,
           message: 'Login success.',
           statusCode: HttpStatus.OK,
         },

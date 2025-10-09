@@ -29,6 +29,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // console.log(exception);
     const responseBody = {
       _metadata: {
+        success: false,
         message: specificException.response.message,
         description: specificException.response.error,
         timestamp: new Date().toISOString(),
