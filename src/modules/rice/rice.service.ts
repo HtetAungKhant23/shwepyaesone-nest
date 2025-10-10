@@ -4,21 +4,24 @@ import { BadRequestException } from '@app/core/exceptions/bad-request.exception'
 import { Injectable } from '@nestjs/common';
 import { CreateRiceCategoryDto } from './dto/create-rice-category.dto';
 import { CreateRiceDto } from './dto/create-rice.dto';
-import { RiceCategoryEntity, RiceEntity } from './entity/rice.entity';
+import { PopulatedRiceEntity, RiceCategoryEntity } from './entity/rice.entity';
 import { RiceMapper } from './mapper/rice.mapper';
 
 @Injectable()
 export class RiceService {
   constructor(private readonly dbService: PrismaService) {}
 
-  async getAllRice(): Promise<RiceEntity[]> {
+  async getAllRice(): Promise<PopulatedRiceEntity[]> {
     try {
       const rice = await this.dbService.rice.findMany({
         where: {
           deleted: false,
         },
+        include: {
+          category: true,
+        },
       });
-      return RiceMapper.toDomainArray(rice);
+      return RiceMapper.toDomainPopulatedArray(rice);
     } catch (err) {
       throw new BadRequestException({
         message: err.message,
@@ -27,15 +30,18 @@ export class RiceService {
     }
   }
 
-  async createRice(dto: CreateRiceDto): Promise<RiceEntity> {
+  async createRice(dto: CreateRiceDto): Promise<PopulatedRiceEntity> {
     try {
       const rice = await this.dbService.rice.create({
         data: {
           name: dto.name,
           categoryId: dto.categoryId,
         },
+        include: {
+          category: true,
+        },
       });
-      return RiceMapper.toDomain(rice);
+      return RiceMapper.toDomainPopulated(rice);
     } catch (err) {
       throw new BadRequestException({
         message: err.message,
