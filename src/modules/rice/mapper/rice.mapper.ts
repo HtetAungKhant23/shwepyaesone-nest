@@ -33,7 +33,7 @@ export class RiceMapper {
   }
 
   static toDomainPopulatedArray(prismaData: Rice[]): PopulatedRiceEntity[] {
-    return prismaData.map(this.toDomainPopulated);
+    return prismaData.map(this.toDomainPopulated.bind(this));
   }
 
   static categoryToDomain(prismaData: RiceCategory): RiceCategoryEntity {
