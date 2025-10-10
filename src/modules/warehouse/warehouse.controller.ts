@@ -1,23 +1,23 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
-import { InventoryService } from './inventory.service';
-import { CreateInventoryDto } from './dto/create-inventory.dto';
+import { WarehouseService } from './warehouse.service';
+import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { UserAuthGuard } from '../auth/guard/user.auth.guard';
 import { AddRiceDto } from './dto/add-rice.dto';
 
-@ApiTags('Inventory')
+@ApiTags('Warehouse')
 @Controller()
 @ApiBearerAuth()
 @UseGuards(UserAuthGuard)
-export class InventoryController {
-  constructor(private readonly inventoryService: InventoryService) {}
+export class WarehouseController {
+  constructor(private readonly warehouseService: WarehouseService) {}
 
   @Get('')
   @HttpCode(HttpStatus.OK)
-  async getInventories() {
-    const inventories = await this.inventoryService.getInventories();
+  async getWarehouses() {
+    const warehouses = await this.warehouseService.getWarehouses();
     return {
-      _data: inventories,
+      _data: warehouses,
       _metadata: {
         success: true,
         message: 'inventory successfully fetched.',
@@ -28,14 +28,14 @@ export class InventoryController {
 
   @Post('')
   @HttpCode(HttpStatus.CREATED)
-  @ApiBody({ type: CreateInventoryDto })
-  async createInventory(@Body() dto: CreateInventoryDto) {
-    const inventory = await this.inventoryService.createInventory(dto);
+  @ApiBody({ type: CreateWarehouseDto })
+  async createWarehouse(@Body() dto: CreateWarehouseDto) {
+    const warehouse = await this.warehouseService.createWarehouse(dto);
     return {
-      _data: inventory,
+      _data: warehouse,
       _metadata: {
         success: true,
-        message: 'inventory successfully created.',
+        message: 'warehouse successfully created.',
         statusCode: HttpStatus.CREATED,
       },
     };
@@ -46,12 +46,12 @@ export class InventoryController {
   @ApiParam({ name: 'id', type: String })
   @ApiBody({ type: AddRiceDto })
   async addRice(@Body() dto: AddRiceDto, @Param('id') id: string) {
-    const riceAddedToInventory = await this.inventoryService.addRice({ ...dto, id });
+    const riceAddedToWarehouse = await this.warehouseService.addRice({ ...dto, id });
     return {
-      _data: riceAddedToInventory,
+      _data: riceAddedToWarehouse,
       _metadata: {
         success: true,
-        message: 'new rice successfully added to inventory.',
+        message: 'new rice successfully added to warehouse.',
         statusCode: HttpStatus.OK,
       },
     };

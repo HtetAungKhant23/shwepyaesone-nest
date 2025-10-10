@@ -2,24 +2,24 @@ import { PrismaService } from '@app/shared/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { BadRequestException } from '@app/core/exceptions/bad-request.exception';
 import { ExceptionConstants } from '@app/core/exceptions/constants';
-import { Inventory, Rice, RiceBySupplier, Supplier } from '@prisma/client';
-import { CreateInventoryDto } from './dto/create-inventory.dto';
+import { Warehouse, Rice, RiceBySupplier, Supplier } from '@prisma/client';
+import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { AddRiceDto } from './dto/add-rice.dto';
-import { InventoryEntity } from './entity/inventory.entity';
-import { InventoryMapper } from './mapper/inventory.mapper';
+import { WarehouseEntity } from './entity/warehouse.entity';
+import { WarehouseMapper } from './mapper/warehouse.mapper';
 
 @Injectable()
-export class InventoryService {
+export class WarehouseService {
   constructor(private readonly dbService: PrismaService) {}
 
-  async getInventories(): Promise<InventoryEntity[]> {
+  async getWarehouses(): Promise<WarehouseEntity[]> {
     try {
-      const inventories: (Inventory & {
+      const warehouses: (Warehouse & {
         riceBySupplier: (RiceBySupplier & {
           rice: Rice;
           supplier: Supplier;
         })[];
-      })[] = await this.dbService.inventory.findMany({
+      })[] = await this.dbService.warehouse.findMany({
         where: {
           deleted: false,
         },
@@ -33,7 +33,7 @@ export class InventoryService {
         },
       });
 
-      return InventoryMapper.toDomainArray(inventories);
+      return WarehouseMapper.toDomainArray(warehouses);
     } catch (err) {
       throw new BadRequestException({
         message: err.message,
@@ -42,11 +42,12 @@ export class InventoryService {
     }
   }
 
-  async createInventory(dto: CreateInventoryDto) {
+  async createWarehouse(dto: CreateWarehouseDto) {
     try {
-      return await this.dbService.inventory.create({
+      return await this.dbService.warehouse.create({
         data: {
           name: dto.name,
+          address: dto.address,
         },
       });
     } catch (err) {
@@ -59,9 +60,9 @@ export class InventoryService {
 
   async addRice(dto: AddRiceDto & { id: string }) {
     try {
-      const riceAddedToInventory = await this.dbService.riceBySupplier.create({
+      const riceAddedToWarehouse = await this.dbService.riceBySupplier.create({
         data: {
-          inventoryId: dto.id,
+          warehouseId: dto.id,
           riceId: dto.riceId,
           supplierId: dto.supplierId,
           buyingPrice: dto.buyingPrice,
@@ -70,7 +71,7 @@ export class InventoryService {
           remainStock: dto.stock,
         },
       });
-      await this.dbService.inventory.update({
+      await this.dbService.warehouse.update({
         where: {
           id: dto.id,
         },
@@ -80,7 +81,7 @@ export class InventoryService {
           },
         },
       });
-      return riceAddedToInventory;
+      return riceAddedToWarehouse;
     } catch (err) {
       throw new BadRequestException({
         message: err.message,

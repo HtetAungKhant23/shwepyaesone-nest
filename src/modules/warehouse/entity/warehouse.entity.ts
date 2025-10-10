@@ -21,10 +21,12 @@ export class RiceBySupplierEntity {
   updatedAt: Date;
 }
 
-export class InventoryEntity {
+export class WarehouseEntity {
   id: string;
 
   name: string;
+
+  address: string;
 
   totalStock: number;
 

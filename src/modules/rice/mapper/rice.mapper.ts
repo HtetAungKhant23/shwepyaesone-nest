@@ -1,5 +1,5 @@
 import { Rice, RiceBySupplier, RiceCategory, Supplier } from '@prisma/client';
-import { RiceBySupplierEntity } from '@app/modules/inventory/entity/inventory.entity';
+import { RiceBySupplierEntity } from '@app/modules/warehouse/entity/warehouse.entity';
 import { SupplierMapper } from '@app/modules/supplier/mapper/supplier.mapper';
 import { PopulatedRiceEntity, RiceCategoryEntity, RiceEntity } from '../entity/rice.entity';
 

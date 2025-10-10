@@ -1,19 +1,20 @@
-import { Inventory, Rice, RiceBySupplier, Supplier } from '@prisma/client';
+import { Warehouse, Rice, RiceBySupplier, Supplier } from '@prisma/client';
 import { RiceMapper } from '@app/modules/rice/mapper/rice.mapper';
-import { InventoryEntity } from '../entity/inventory.entity';
+import { WarehouseEntity } from '../entity/warehouse.entity';
 
-export class InventoryMapper {
+export class WarehouseMapper {
   static toDomain(
-    prismaData: Inventory & {
+    prismaData: Warehouse & {
       riceBySupplier: (RiceBySupplier & {
         rice: Rice;
         supplier: Supplier;
       })[];
     },
-  ): InventoryEntity {
-    const entity = new InventoryEntity();
+  ): WarehouseEntity {
+    const entity = new WarehouseEntity();
     entity.id = prismaData.id;
     entity.name = prismaData.name;
+    entity.address = prismaData.address;
     entity.totalStock = prismaData.totalStock;
     entity.riceBySupplier = RiceMapper.riceBySupplierToDomainArray(prismaData.riceBySupplier);
     entity.createdAt = prismaData.createdAt;
@@ -22,13 +23,13 @@ export class InventoryMapper {
   }
 
   static toDomainArray(
-    prismaData: (Inventory & {
+    prismaData: (Warehouse & {
       riceBySupplier: (RiceBySupplier & {
         rice: Rice;
         supplier: Supplier;
       })[];
     })[],
-  ): InventoryEntity[] {
+  ): WarehouseEntity[] {
     return prismaData.map(this.toDomain);
   }
 }

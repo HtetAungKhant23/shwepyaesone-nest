@@ -2,7 +2,7 @@ import { DynamicModule, ForwardReference, Module, Type } from '@nestjs/common';
 import { RouterModule as NestJsRouterModule } from '@nestjs/core';
 import { RoutesAuthModule } from './route/router.auth.module';
 import { RoutesRiceModule } from './route/router.rice.module';
-import { RoutesInventoryModule } from './route/router.inventory.module';
+import { RoutesWarehouseModule } from './route/router.warehouse.module';
 import { RoutesSupplierModule } from './route/router.supplier.module';
 
 @Module({})
@@ -12,7 +12,7 @@ export class RouterModule {
     imports.push(
       RoutesAuthModule,
       RoutesRiceModule,
-      RoutesInventoryModule,
+      RoutesWarehouseModule,
       RoutesSupplierModule,
       NestJsRouterModule.register([
         {
@@ -24,8 +24,8 @@ export class RouterModule {
           module: RoutesRiceModule,
         },
         {
-          path: '/inventory',
-          module: RoutesInventoryModule,
+          path: '/warehouse',
+          module: RoutesWarehouseModule,
         },
         {
           path: '/supplier',

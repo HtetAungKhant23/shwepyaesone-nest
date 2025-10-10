@@ -62,9 +62,10 @@ model Rice {
   @@map("rices")
 }
 
-model Inventory {
+model Warehouse {
   id             String           @id @default(uuid())
   name           String
+  address        String
   totalStock     Int              @default(0)
   riceBySupplier RiceBySupplier[]
 
@@ -72,7 +73,7 @@ model Inventory {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("inventories")
+  @@map("warehouses")
 }
 
 model RiceBySupplier {
@@ -84,8 +85,8 @@ model RiceBySupplier {
   totalStock  Int @default(0)
   remainStock Int @default(0)
 
-  inventoryId String
-  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
   riceId      String
   rice        Rice      @relation(fields: [riceId], references: [id])
   supplierId  String
