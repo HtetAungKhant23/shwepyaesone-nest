@@ -39,4 +39,18 @@ export class SupplierService {
       });
     }
   }
+
+  async deleteSupplier(supplierId: string): Promise<void> {
+    try {
+      await this.dbService.supplier.update({
+        where: { id: supplierId },
+        data: { deleted: true },
+      });
+    } catch (err) {
+      throw new BadRequestException({
+        message: err.message,
+        code: ExceptionConstants.BadRequestCodes.INVALID_INPUT,
+      });
+    }
+  }
 }

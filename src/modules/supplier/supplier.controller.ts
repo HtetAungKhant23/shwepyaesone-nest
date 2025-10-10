@@ -1,5 +1,5 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { IResponse } from '@app/core/interfaces/response.interface';
 import { UserAuthGuard } from '../auth/guard/user.auth.guard';
 import { SupplierService } from './supplier.service';
@@ -37,6 +37,21 @@ export class SupplierController {
         success: true,
         message: 'supplier successfully created.',
         statusCode: HttpStatus.CREATED,
+      },
+    };
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ type: String, name: 'id' })
+  async deleteSupplier(@Param('id') supplierId: string) {
+    await this.supplierService.deleteSupplier(supplierId);
+    return {
+      _data: {},
+      _metadata: {
+        success: true,
+        message: 'supplier successfully deleted.',
+        statusCode: HttpStatus.OK,
       },
     };
   }
