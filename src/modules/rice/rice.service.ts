@@ -50,6 +50,20 @@ export class RiceService {
     }
   }
 
+  async deleteRice(riceId: string): Promise<void> {
+    try {
+      await this.dbService.rice.update({
+        where: { id: riceId },
+        data: { deleted: true },
+      });
+    } catch (err) {
+      throw new BadRequestException({
+        message: err.message,
+        code: ExceptionConstants.BadRequestCodes.INVALID_INPUT,
+      });
+    }
+  }
+
   async getAllRiceCategory(): Promise<RiceCategoryEntity[]> {
     try {
       const riceCate = await this.dbService.riceCategory.findMany({
@@ -76,6 +90,20 @@ export class RiceService {
       });
 
       return RiceMapper.categoryToDomain(riceCate);
+    } catch (err) {
+      throw new BadRequestException({
+        message: err.message,
+        code: ExceptionConstants.BadRequestCodes.INVALID_INPUT,
+      });
+    }
+  }
+
+  async deleteRiceCategory(categoryId: string): Promise<void> {
+    try {
+      await this.dbService.riceCategory.update({
+        where: { id: categoryId },
+        data: { deleted: true },
+      });
     } catch (err) {
       throw new BadRequestException({
         message: err.message,

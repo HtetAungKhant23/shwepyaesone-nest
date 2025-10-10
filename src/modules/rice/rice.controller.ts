@@ -1,5 +1,5 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { RiceService } from './rice.service';
 import { CreateRiceCategoryDto } from './dto/create-rice-category.dto';
 import { CreateRiceDto } from './dto/create-rice.dto';
@@ -41,6 +41,21 @@ export class RiceController {
     };
   }
 
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ type: String, name: 'id' })
+  async deleteRice(@Param('id') riceId: string) {
+    await this.riceService.deleteRice(riceId);
+    return {
+      _data: {},
+      _metadata: {
+        success: true,
+        message: 'rice successfully deleted.',
+        statusCode: HttpStatus.OK,
+      },
+    };
+  }
+
   @Get('category')
   @HttpCode(HttpStatus.OK)
   async getAllRiceCategory() {
@@ -66,6 +81,21 @@ export class RiceController {
         success: true,
         message: 'rice category successfully created.',
         statusCode: HttpStatus.CREATED,
+      },
+    };
+  }
+
+  @Delete('category/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ type: String, name: 'id' })
+  async deleteRiceCategory(@Param('id') categoryId: string) {
+    await this.riceService.deleteRiceCategory(categoryId);
+    return {
+      _data: {},
+      _metadata: {
+        success: true,
+        message: 'rice category successfully deleted.',
+        statusCode: HttpStatus.OK,
       },
     };
   }
