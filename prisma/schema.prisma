@@ -18,6 +18,11 @@ model Admin {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  batch           Batch[]
+  supplier        Supplier[]
+  supplierPayment SupplierPayment[]
+  warehouse       Warehouse[]
+
   @@map("admins")
 }
 
@@ -33,95 +38,299 @@ model Otp {
   @@map("otps")
 }
 
-model RiceCategory {
-  id          String  @id @default(uuid())
-  name        String // ဆန်ကြမ်း/ ဆန်ကွဲ/ ပေါ်ဆန်းမွှေး
-  description String?
-
-  rice Rice[]
-
-  deleted   Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("rice_categories")
-}
-
 model Rice {
   id   String @id @default(uuid())
-  name String // မကြမ်းထော/ ရွှေဘို
-
-  categoryId     String
-  category       RiceCategory     @relation(fields: [categoryId], references: [id])
-  riceBySupplier RiceBySupplier[]
+  name String // မကြမ်းထောဆန်ကြမ်း / ရွှေဘိုပေါ်ဆန်းမွှေး / spsဆန်ချော
 
   deleted   Boolean  @default(false)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+
+  batchItem           BatchItem[]
+  supplierPaymentItem SupplierPaymentItem[]
+  warehouseItem       WarehouseItem[]
 
   @@map("rices")
 }
 
-model Warehouse {
-  id             String           @id @default(uuid())
-  name           String
-  address        String
-  totalStock     Int              @default(0)
-  riceBySupplier RiceBySupplier[]
-
-  deleted   Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("warehouses")
-}
-
-model RiceBySupplier {
-  id String @id @default(uuid())
-
-  buyingPrice  Int @default(0)
-  sellingPrice Int @default(0)
-
-  totalStock  Int @default(0)
-  remainStock Int @default(0)
-
-  warehouseId String
-  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
-  riceId      String
-  rice        Rice      @relation(fields: [riceId], references: [id])
-  supplierId  String
-  supplier    Supplier  @relation(fields: [supplierId], references: [id])
-
-  deleted   Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("rice_by_suppliers")
-}
-
 model Supplier {
-  id             String           @id @default(uuid())
-  name           String
-  phone          String           @unique
-  address        String?
-  riceBySupplier RiceBySupplier[]
-
-  deleted   Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("suppliers")
-}
-
-model Customer {
-  id      String  @id @default(uuid())
+  id      String   @id @default(uuid())
   name    String
-  phone   String  @unique
+  phone   String[]
   address String?
 
   deleted   Boolean  @default(false)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("customers")
+  creatorId String @map("creator_id")
+  creator   Admin  @relation(fields: [creatorId], references: [id])
+
+  batch Batch[]
+
+  @@map("suppliers")
 }
+
+model Batch {
+  id               String      @id @default(uuid())
+  batchNo          String      @map("batch_no")
+  totalStock       Int         @default(0) @map("total_stock")
+  paid             Boolean     @default(false)
+  items            BatchItem[]
+  storeInWarehouse Boolean     @default(false) @map("store_in_warehouse")
+
+  deleted Boolean @default(false)
+
+  supplierId String   @map("supplier_id")
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+  creatorId  String   @map("creator_id")
+  creator    Admin    @relation(fields: [creatorId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  supplierPayment SupplierPayment[]
+
+  @@map("batches")
+}
+
+model BatchItem {
+  id          String  @id @default(uuid())
+  totalStock  Int     @default(0) @map("total_stock")
+  remainStock Int     @default(0) @map("remain_stock")
+  paidQty     Int     @default(0) @map("paid_qty")
+  paid        Boolean @default(false)
+
+  riceId    String   @map("rice_id")
+  rice      Rice     @relation(fields: [riceId], references: [id])
+  batchId   String   @map("batch_id")
+  batch     Batch    @relation(fields: [batchId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("batch_items")
+}
+
+model SupplierPayment {
+  id String @id @default(uuid())
+
+  totalAmount  Int                   @default(0) @map("total_amount")
+  item         SupplierPaymentItem[]
+  note         String?
+  otherCharges Json?
+  paid         Boolean               @default(false)
+
+  batchId String @map("batch_id")
+  batch   Batch  @relation(fields: [batchId], references: [id])
+
+  creatorId String   @map("creator_id")
+  creator   Admin    @relation(fields: [creatorId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("supplier_payments")
+}
+
+model SupplierPaymentItem {
+  id String @id @default(uuid())
+
+  price             Int             @default(0)
+  qty               Int             @default(0)
+  riceId            String          @map("rice_id")
+  rice              Rice            @relation(fields: [riceId], references: [id])
+  supplierPaymentId String          @map("supplier_payment_id")
+  supplierPayment   SupplierPayment @relation(fields: [supplierPaymentId], references: [id])
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  @@map("supplier_payment_items")
+}
+
+model Warehouse {
+  id         String          @id @default(uuid())
+  name       String
+  address    String
+  totalStock Int             @default(0) @map("total_stock")
+  items      WarehouseItem[]
+
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  creatorId String @map("creator_id")
+  creator   Admin  @relation(fields: [creatorId], references: [id])
+
+  @@map("warehouses")
+}
+
+model WarehouseItem {
+  id String @id @default(uuid())
+
+  stock  Int    @default(0)
+  riceId String @unique() @map("rice_id")
+  rice   Rice   @relation(fields: [riceId], references: [id])
+
+  warehouseId String    @map("warehouse_id")
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("warehouse_items")
+}
+
+// model RiceCategory {
+//   id          String  @id @default(uuid())
+//   name        String // ဆန်ကြမ်း/ ဆန်ကွဲ/ ပေါ်ဆန်းမွှေး
+//   description String?
+
+//   deleted   Boolean  @default(false)
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+
+//   @@map("rice_categories")
+// }
+
+// model Warehouse {
+//   id         String @id @default(uuid())
+//   name       String
+//   address    String
+//   totalStock Int    @default(0) @map("total_stock")
+
+//   storageFee        Int @default(0) @map("storage_fee")
+//   brokerageFee      Int @default(0) @map("brokerage_fee")
+//   transportationFee Int @default(0) @map("transportation_fee")
+//   deliveryFee       Int @default(0) @map("delivery_fee")
+//   workerFee         Int @default(0) @map("worker_fee")
+
+//   deleted   Boolean  @default(false)
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+
+//   creatorId String  @map("creator_id")
+//   creator   Admin   @relation(fields: [creatorId], references: [id])
+//   batch     Batch[]
+
+//   @@map("warehouses")
+// }
+
+// model SupplierInvoice {
+//   id String @id @default(uuid())
+
+//   item              SupplierInvoiceItem[]
+//   storageFee        Int                   @default(0) @map("storage_fee")
+//   brokerageFee      Int                   @default(0) @map("brokerage_fee")
+//   transportationFee Int                   @default(0) @map("transportation_fee")
+//   deliveryFee       Int                   @default(0) @map("delivery_fee")
+//   workerFee         Int                   @default(0) @map("worker_fee")
+
+//   deleted   Boolean  @default(false)
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+
+//   creatorId String @map("creator_id")
+//   creator   Admin  @relation(fields: [creatorId], references: [id])
+
+//   @@map("supplier_invoices")
+// }
+
+// model SupplierInvoiceItem {
+//   id String @id @default(uuid())
+
+//   quantity          Int
+//   batchItemId       String          @map("batch_item_id")
+//   batchItem         BatchItem       @relation(fields: [batchItemId], references: [id])
+//   supplierInvoiceId String          @map("supplier_invoice_id")
+//   supplierInvoice   SupplierInvoice @relation(fields: [supplierInvoiceId], references: [id])
+
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+
+//   @@map("supplier_invoice_items")
+// }
+
+// model Customer {
+//   id       String   @id @default(uuid())
+//   name     String
+//   phone    String[]
+//   shopName String   @map("shop_name")
+//   address  String?
+
+//   deleted   Boolean   @default(false)
+//   createdAt DateTime  @default(now()) @map("created_at")
+//   updatedAt DateTime  @updatedAt @map("updated_at")
+//   Invoice   Invoice[]
+
+//   @@map("customers")
+// }
+
+// model Invoice {
+//   id String @id @default(uuid())
+
+//   note String?
+//   type INVOICE_TYPE
+
+//   netTotal Int
+//   count    Int
+//   riceId   String @map("rice_id")
+//   rice     Rice   @relation(fields: [riceId], references: [id])
+
+//   supplierId String?   @map("supplier_id")
+//   supplier   Supplier? @relation(fields: [supplierId], references: [id])
+//   customerId String?   @map("customer_id")
+//   customer   Customer? @relation(fields: [customerId], references: [id])
+
+//   deleted   Boolean  @default(false)
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+
+//   @@map("invoices")
+// }
+
+// enum INVOICE_TYPE {
+//   SHIPMENT
+//   SALE
+// }
+
+// enum SHIPMENT_TYPE {
+//   PICKUP
+//   DELIVER
+// }
+
+// model RiceBySupplier {
+//   id String @id @default(uuid())
+
+//   totalStock  Int @default(0) @map("total_stock")
+//   remainStock Int @default(0) @map("remain_stock")
+
+//   riceId String @map("rice_id")
+//   rice   Rice   @relation(fields: [riceId], references: [id])
+
+//   deleted   Boolean  @default(false)
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+//   Ship      Ship?    @relation(fields: [shipId], references: [id])
+//   shipId    String?
+
+//   @@map("rice_by_suppliers")
+// }
+
+// model Ship {
+//   id         String @id @default(uuid())
+//   totalStock Int    @default(0) @map("total_stock")
+
+//   transportationFee Int @default(0) @map("transportation_fee")
+//   workerFee         Int @default(0) @map("worker_fee")
+//   brokerageFee      Int @default(0) @map("brokerage_fee")
+
+//   supplierRice RiceBySupplier[]
+
+//   deleted   Boolean  @default(false)
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+
+//   creatorId  String    @map("creator_id")
+//   creator    Admin     @relation(fields: [creatorId], references: [id])
+//   Supplier   Supplier? @relation(fields: [supplierId], references: [id])
+//   supplierId String?
+
+//   @@map("ships")
+// }
