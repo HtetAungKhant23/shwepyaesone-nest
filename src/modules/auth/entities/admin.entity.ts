@@ -1,4 +1,6 @@
-export class UserEntity {
+export class AdminEntity {
+  id: string;
+
   name: string;
 
   email: string;
@@ -7,7 +9,8 @@ export class UserEntity {
 
   deleted: boolean;
 
-  constructor(name: string, email: string, isVerify: boolean, deleted: boolean) {
+  constructor(id: string, name: string, email: string, isVerify: boolean, deleted: boolean) {
+    this.id = id;
     this.name = name;
     this.email = email;
     this.isVerify = isVerify;

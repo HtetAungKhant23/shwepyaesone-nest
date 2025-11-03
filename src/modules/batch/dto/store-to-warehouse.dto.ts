@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateRiceDto {
-  @ApiProperty()
-  @IsString()
+export class StoreToWarehouseDto {
+  @ApiProperty({ type: String })
   @IsNotEmpty()
-  name: string;
+  @IsString()
+  warehouseId: string;
 }

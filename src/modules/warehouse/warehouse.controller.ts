@@ -1,9 +1,10 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
+import { CurrentUser, IAuthUser } from '@app/core/decorators/auth.decorators';
 import { WarehouseService } from './warehouse.service';
 import { CreateWarehouseDto } from './dto/create-warehouse.dto';
 import { UserAuthGuard } from '../auth/guard/user.auth.guard';
-import { AddRiceDto } from './dto/add-rice.dto';
+import { TransferStockDto } from './dto/transfer-stock.dto';
 
 @ApiTags('Warehouse')
 @Controller()
@@ -20,7 +21,7 @@ export class WarehouseController {
       _data: warehouses,
       _metadata: {
         success: true,
-        message: 'inventory successfully fetched.',
+        message: 'warehouses successfully fetched.',
         statusCode: HttpStatus.OK,
       },
     };
@@ -29,8 +30,8 @@ export class WarehouseController {
   @Post('')
   @HttpCode(HttpStatus.CREATED)
   @ApiBody({ type: CreateWarehouseDto })
-  async createWarehouse(@Body() dto: CreateWarehouseDto) {
-    const warehouse = await this.warehouseService.createWarehouse(dto);
+  async createWarehouse(@Body() dto: CreateWarehouseDto, @CurrentUser() admin: IAuthUser) {
+    const warehouse = await this.warehouseService.createWarehouse({ ...dto, adminId: admin.id });
     return {
       _data: warehouse,
       _metadata: {
@@ -41,17 +42,32 @@ export class WarehouseController {
     };
   }
 
-  @Post(':id/add-rice')
+  @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiParam({ name: 'id', type: String })
-  @ApiBody({ type: AddRiceDto })
-  async addRice(@Body() dto: AddRiceDto, @Param('id') id: string) {
-    const riceAddedToWarehouse = await this.warehouseService.addRice({ ...dto, id });
+  @ApiParam({ type: String, name: 'id' })
+  async getWarehouseDetail(@Param('id') id: string) {
+    const warehouse = await this.warehouseService.getWarehouseDetail(id);
     return {
-      _data: riceAddedToWarehouse,
+      _data: warehouse,
       _metadata: {
         success: true,
-        message: 'new rice successfully added to warehouse.',
+        message: 'warehouse detail successfully fetched.',
+        statusCode: HttpStatus.OK,
+      },
+    };
+  }
+
+  @Post(':id/transfer-stock')
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ type: TransferStockDto })
+  async transferStock(@Body() dto: TransferStockDto, @Param('id') id: string, @CurrentUser() admin: IAuthUser) {
+    await this.warehouseService.transferStock({ ...dto, fromId: id, adminId: admin.id });
+    return {
+      _data: {},
+      _metadata: {
+        success: true,
+        message: 'stock successfully transfer.',
         statusCode: HttpStatus.OK,
       },
     };

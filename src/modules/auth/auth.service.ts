@@ -10,7 +10,7 @@ import { IAuthService } from './interfaces/auth-service.interface';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { EmailVerifyDto } from './dto/email-verify.dto';
-import { UserEntity } from './entities/user.entity';
+import { AdminEntity } from './entities/admin.entity';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -20,21 +20,21 @@ export class AuthService implements IAuthService {
   ) {}
 
   async register(dto: RegisterDto): Promise<number> {
-    const existUser = await this.dbService.admin.findUnique({
+    const adminExist = await this.dbService.admin.findUnique({
       where: {
         email: dto.email,
         deleted: false,
       },
     });
 
-    if (existUser && existUser.isVerify) {
+    if (adminExist && adminExist.isVerify) {
       throw new BadRequestException({
-        message: `User already exist`,
+        message: `Admin already exist`,
         code: ExceptionConstants.BadRequestCodes.RESOURCE_ALREADY_EXISTS,
       });
     }
 
-    if (!existUser) {
+    if (!adminExist) {
       await this.dbService.admin.create({
         data: {
           name: dto.name,
@@ -49,7 +49,7 @@ export class AuthService implements IAuthService {
   }
 
   async login(dto: LoginDto): Promise<string> {
-    const existUser = await this.dbService.admin.findUnique({
+    const adminExist = await this.dbService.admin.findUnique({
       where: {
         email: dto.email,
         deleted: false,
@@ -57,14 +57,14 @@ export class AuthService implements IAuthService {
       },
     });
 
-    if (!existUser) {
+    if (!adminExist) {
       throw new NotFoundException({
-        message: `User not found`,
+        message: `Admin not found`,
         code: ExceptionConstants.BadRequestCodes.RESOURCE_NOT_FOUND,
       });
     }
 
-    const matchPw = await verifyText(existUser.password, dto.password);
+    const matchPw = await verifyText(adminExist.password, dto.password);
 
     if (!matchPw) {
       throw new UnauthorizedException({
@@ -73,24 +73,24 @@ export class AuthService implements IAuthService {
       });
     }
 
-    return this.generateToken(existUser.id, existUser.email, process.env.USER_SECRET_KEY as string);
+    return this.generateToken(adminExist.id, adminExist.email, process.env.USER_SECRET_KEY as string);
   }
 
-  async getMe(id: string): Promise<UserEntity> {
-    const user = await this.dbService.admin.findUnique({
+  async getMe(id: string): Promise<AdminEntity> {
+    const admin = await this.dbService.admin.findUnique({
       where: {
         id,
       },
     });
 
-    if (!user) {
+    if (!admin) {
       throw new NotFoundException({
-        message: 'User not found',
+        message: 'Admin not found',
         code: ExceptionConstants.BadRequestCodes.RESOURCE_NOT_FOUND,
       });
     }
 
-    return new UserEntity(user.name, user.email, user.isVerify, user.deleted);
+    return new AdminEntity(admin.id, admin.name, admin.email, admin.isVerify, admin.deleted);
   }
 
   async verifyEmail(dto: EmailVerifyDto): Promise<string> {
@@ -121,7 +121,7 @@ export class AuthService implements IAuthService {
       });
     }
 
-    const userVerified = await this.dbService.admin.update({
+    const adminVerified = await this.dbService.admin.update({
       where: {
         email: dto.email,
       },
@@ -135,20 +135,20 @@ export class AuthService implements IAuthService {
       },
     });
 
-    return this.generateToken(userVerified.id, userVerified.email, process.env.USER_SECRET_KEY as string);
+    return this.generateToken(adminVerified.id, adminVerified.email, process.env.USER_SECRET_KEY as string);
   }
 
   async resendOtp(email: string): Promise<number> {
-    const existUser = await this.dbService.admin.findUnique({
+    const adminExist = await this.dbService.admin.findUnique({
       where: {
         email,
         deleted: false,
         isVerify: false,
       },
     });
-    if (!existUser) {
+    if (!adminExist) {
       throw new BadRequestException({
-        message: `User not found`,
+        message: `Admin not found`,
         code: ExceptionConstants.BadRequestCodes.RESOURCE_NOT_FOUND,
       });
     }

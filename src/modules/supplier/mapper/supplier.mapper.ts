@@ -1,19 +1,57 @@
-import { Supplier } from '@prisma/client';
-import { SupplierEntity } from '../entity/supplier.entity';
+import { Batch, Supplier } from '@prisma/client';
+import { BatchMapper } from '@app/modules/batch/mapper/batch.mapper';
+import { PopulatedSupplierEntity, SupplierEntity } from '../entity/supplier.entity';
 
 export class SupplierMapper {
-  static toDomain(prismaData: Supplier): SupplierEntity {
+  static toDomain(
+    prismaData: Supplier & {
+      batch: {
+        id: string;
+      }[];
+    },
+  ): SupplierEntity {
     return new SupplierEntity(
       prismaData.id,
       prismaData.name,
       prismaData.phone,
       prismaData.createdAt,
-      prismaData.updatedAt,
-      prismaData.address,
+      prismaData.batch.map((b) => b.id),
+      prismaData?.address || null,
     );
   }
 
   static toDomainArray(prismaData: Supplier[]): SupplierEntity[] {
     return prismaData.map(this.toDomain);
+  }
+
+  static toDomainPopulated(
+    prismaData: Supplier & {
+      batch: (Batch & {
+        items: {
+          id: string;
+        }[];
+      })[];
+    },
+  ): PopulatedSupplierEntity {
+    return new PopulatedSupplierEntity(
+      prismaData.id,
+      prismaData.name,
+      prismaData.phone,
+      prismaData.createdAt,
+      BatchMapper.toDomainArray(prismaData.batch),
+      prismaData?.address || null,
+    );
+  }
+
+  static toDomainPopulatedArray(
+    prismaData: (Supplier & {
+      batch: (Batch & {
+        items: {
+          id: string;
+        }[];
+      })[];
+    })[],
+  ): PopulatedSupplierEntity[] {
+    return prismaData.map(this.toDomainPopulated.bind(this));
   }
 }
