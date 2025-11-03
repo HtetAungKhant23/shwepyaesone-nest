@@ -5,7 +5,7 @@ class StockDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  riceId: string;
+  warehouseItemId: string;
 
   @ApiProperty()
   @IsNumber()

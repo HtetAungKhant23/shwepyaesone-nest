@@ -50,7 +50,7 @@ model Rice {
   batchItem             BatchItem[]
   supplierPaymentItem   SupplierPaymentItem[]
   warehouseItem         WarehouseItem[]
-  warehouseStockHistory WarehouseStockHistory?
+  warehouseStockHistory WarehouseStockHistory[]
 
   @@map("rices")
 }
@@ -171,7 +171,7 @@ model WarehouseItem {
   id String @id @default(uuid())
 
   stock  Int    @default(0)
-  riceId String @unique() @map("rice_id")
+  riceId String @map("rice_id")
   rice   Rice   @relation(fields: [riceId], references: [id])
 
   warehouseId String    @map("warehouse_id")
@@ -179,13 +179,14 @@ model WarehouseItem {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
+  @@unique([riceId, warehouseId])
   @@map("warehouse_items")
 }
 
 model WarehouseStockHistory {
   id     String @id @default(uuid())
   stock  Int    @default(0) @map("total_stock")
-  riceId String @unique() @map("rice_id")
+  riceId String @map("rice_id")
   rice   Rice   @relation(fields: [riceId], references: [id])
 
   fromBatchId     String?

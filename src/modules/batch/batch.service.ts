@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-plusplus */
 import { PrismaService } from '@app/shared/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
@@ -54,11 +56,11 @@ export class BatchService {
           creatorId: dto.adminId,
         },
       });
+
       let totalStock = 0;
-      for (let i = 0; i < dto.items.length; i++) {
-        const item = dto.items[i];
+      dto.items.map(async (item) => {
         totalStock += item?.stock || 0;
-        this.dbService.batchItem.create({
+        await this.dbService.batchItem.create({
           data: {
             totalStock: item?.stock || 0,
             remainStock: item?.stock || 0,
@@ -66,7 +68,8 @@ export class BatchService {
             batchId: newBatch.id,
           },
         });
-      }
+      });
+
       const batch = await this.dbService.batch.update({
         where: {
           id: newBatch.id,
@@ -97,6 +100,7 @@ export class BatchService {
         where: {
           id: dto.batchId,
           deleted: false,
+          storeInWarehouse: false,
         },
         include: {
           items: true,
@@ -119,58 +123,30 @@ export class BatchService {
         throw new Error('warehouse not found');
       }
 
-      for (let i = 0; i < batch.items.length; i++) {
-        const item = batch.items[i];
-        const toStoreStock = item?.remainStock || 0;
-        const whItem = warehouse.items.find((d) => d.riceId === item?.riceId);
-
-        this.dbService.$transaction(async (tx) => {
-          // set storeToWarehouse true
-          tx.batch.update({
-            where: {
-              id: batch.id,
-            },
-            data: {
-              storeInWarehouse: true,
-            },
+      await this.dbService.$transaction(async (tx) => {
+        let totalStoreStock = 0;
+        for (const item of batch.items) {
+          const toStoreStock = item?.remainStock || 0;
+          totalStoreStock += toStoreStock;
+          const whItem = warehouse.items.find((d) => d.riceId === item?.riceId);
+          // set remain stock to 0
+          await tx.batchItem.update({
+            where: { id: item.id },
+            data: { remainStock: 0 },
           });
-          // set stock 0 to remain stock
-          tx.batchItem.update({
-            where: {
-              id: item?.id,
-            },
-            data: {
-              remainStock: 0,
-            },
-          });
-          // increase stock toWarehouse
-          tx.warehouse.update({
-            where: {
-              id: warehouse.id,
-            },
-            data: {
-              totalStock: {
-                increment: toStoreStock,
-              },
-            },
-          });
-          tx.warehouseItem.upsert({
-            where: {
-              id: whItem?.id || '',
-            },
+          await tx.warehouseItem.upsert({
+            where: { id: whItem ? whItem.id : '' },
             create: {
               stock: toStoreStock,
               riceId: item?.riceId || '',
               warehouseId: warehouse.id,
             },
             update: {
-              stock: {
-                increment: toStoreStock,
-              },
+              stock: { increment: toStoreStock },
             },
           });
           // create warehouse stock history
-          tx.warehouseStockHistory.create({
+          await tx.warehouseStockHistory.create({
             data: {
               stock: toStoreStock,
               riceId: item?.riceId || '',
@@ -179,8 +155,20 @@ export class BatchService {
               toWarehouseId: warehouse.id,
             },
           });
+        }
+        // set storeToWarehouse true
+        await tx.batch.update({
+          where: { id: batch.id },
+          data: { storeInWarehouse: true },
         });
-      }
+        // increase stock to warehouse
+        await tx.warehouse.update({
+          where: { id: warehouse.id },
+          data: {
+            totalStock: { increment: totalStoreStock },
+          },
+        });
+      });
     } catch (err) {
       throw new BadRequestException({
         message: err.message,
