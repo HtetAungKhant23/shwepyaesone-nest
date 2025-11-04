@@ -22,6 +22,7 @@ export class SupplierService {
                   id: true,
                 },
               },
+              creator: true,
             },
           },
         },

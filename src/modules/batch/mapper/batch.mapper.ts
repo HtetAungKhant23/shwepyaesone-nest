@@ -28,7 +28,7 @@ export class BatchMapper {
       items: {
         id: string;
       }[];
-    })[],
+    } & { creator: Admin })[],
   ): BatchEntity[] {
     return prismaData.map(this.toDomain);
   }

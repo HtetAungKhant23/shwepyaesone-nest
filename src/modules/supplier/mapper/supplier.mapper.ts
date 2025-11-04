@@ -1,4 +1,4 @@
-import { Batch, Supplier } from '@prisma/client';
+import { Admin, Batch, Supplier } from '@prisma/client';
 import { BatchMapper } from '@app/modules/batch/mapper/batch.mapper';
 import { PopulatedSupplierEntity, SupplierEntity } from '../entity/supplier.entity';
 
@@ -30,7 +30,7 @@ export class SupplierMapper {
         items: {
           id: string;
         }[];
-      })[];
+      } & { creator: Admin })[];
     },
   ): PopulatedSupplierEntity {
     return new PopulatedSupplierEntity(
@@ -49,7 +49,7 @@ export class SupplierMapper {
         items: {
           id: string;
         }[];
-      })[];
+      } & { creator: Admin })[];
     })[],
   ): PopulatedSupplierEntity[] {
     return prismaData.map(this.toDomainPopulated.bind(this));
