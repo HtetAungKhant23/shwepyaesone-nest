@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import EmailService from '@app/shared/mail/mail.service';
 import { otpTemplate } from '@app/shared/mail/template/otp.template';
 import { CurrentUser, IAuthUser } from '@app/core/decorators/auth.decorators';
+import { charges } from '@app/shared/config/charges.config';
 import { AuthService } from './auth.service';
 import { IAuthService } from './interfaces/auth-service.interface';
 import { RegisterDto } from './dto/register.dto';
@@ -26,9 +27,10 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(UserAuthGuard)
   async getMe(@CurrentUser() user: IAuthUser) {
-    const res = await this.authService.getMe(user.id);
+    const chargesConfig = charges;
+    const me = await this.authService.getMe(user.id);
     return {
-      _data: res,
+      _data: { me, chargesConfig },
       _metadata: {
         success: true,
         message: 'Me successfully fetched.',

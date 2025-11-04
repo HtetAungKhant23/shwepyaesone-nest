@@ -1,4 +1,5 @@
-import { Batch, BatchItem, Rice } from '@prisma/client';
+import { Admin, Batch, BatchItem, Rice } from '@prisma/client';
+import { AdminMapper } from '@app/modules/auth/mapper/admin.mapper';
 import { RiceMapper } from '@app/modules/rice/mapper/rice.mapper';
 import { BatchEntity, BatchItemEntity, PopulatedBatchEntity } from '../entity/batch.entity';
 
@@ -8,7 +9,7 @@ export class BatchMapper {
       items: {
         id: string;
       }[];
-    },
+    } & { creator: Admin },
   ): BatchEntity {
     return new BatchEntity(
       prismaData.id,
@@ -17,7 +18,7 @@ export class BatchMapper {
       prismaData.paid,
       prismaData.storeInWarehouse,
       prismaData.items.map((d) => d.id),
-      prismaData.creatorId,
+      AdminMapper.toDomain(prismaData.creator),
       prismaData.createdAt,
     );
   }
@@ -37,7 +38,7 @@ export class BatchMapper {
       items: (BatchItem & {
         rice: Rice;
       })[];
-    },
+    } & { creator: Admin },
   ): PopulatedBatchEntity {
     return new PopulatedBatchEntity(
       prismaData.id,
@@ -46,7 +47,7 @@ export class BatchMapper {
       prismaData.paid,
       prismaData.storeInWarehouse,
       this.toDomainBatchItemArray(prismaData.items),
-      prismaData.creatorId,
+      AdminMapper.toDomain(prismaData.creator),
       prismaData.createdAt,
     );
   }

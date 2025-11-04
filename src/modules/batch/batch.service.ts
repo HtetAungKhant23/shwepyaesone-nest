@@ -27,6 +27,7 @@ export class BatchService {
               rice: true,
             },
           },
+          creator: true,
         },
       });
       if (!batch) {
@@ -83,6 +84,7 @@ export class BatchService {
               id: true,
             },
           },
+          creator: true,
         },
       });
       return BatchMapper.toDomain(batch);

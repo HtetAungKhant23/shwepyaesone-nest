@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+import { AdminEntity } from '@app/modules/auth/entities/admin.entity';
 import { RiceEntity } from '@app/modules/rice/entity/rice.entity';
 
 class BaseBatch {
@@ -12,7 +13,7 @@ class BaseBatch {
 
   storeInWarehouse: boolean;
 
-  creatorId: string;
+  creator: AdminEntity;
 
   createdAt: Date;
 }
@@ -27,7 +28,7 @@ export class BatchEntity extends BaseBatch {
     paid: boolean,
     storeInWarehouse: boolean,
     items: string[],
-    creatorId: string,
+    creator: AdminEntity,
     createdAt: Date,
   ) {
     super();
@@ -37,7 +38,7 @@ export class BatchEntity extends BaseBatch {
     this.paid = paid;
     this.storeInWarehouse = storeInWarehouse;
     this.items = items;
-    this.creatorId = creatorId;
+    this.creator = creator;
     this.createdAt = createdAt;
   }
 }
@@ -52,7 +53,7 @@ export class PopulatedBatchEntity extends BaseBatch {
     paid: boolean,
     storeInWarehouse: boolean,
     items: BatchItemEntity[],
-    creatorId: string,
+    creator: AdminEntity,
     createdAt: Date,
   ) {
     super();
@@ -62,7 +63,7 @@ export class PopulatedBatchEntity extends BaseBatch {
     this.paid = paid;
     this.items = items;
     this.storeInWarehouse = storeInWarehouse;
-    this.creatorId = creatorId;
+    this.creator = creator;
     this.createdAt = createdAt;
   }
 }

@@ -11,6 +11,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { EmailVerifyDto } from './dto/email-verify.dto';
 import { AdminEntity } from './entities/admin.entity';
+import { AdminMapper } from './mapper/admin.mapper';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -90,7 +91,7 @@ export class AuthService implements IAuthService {
       });
     }
 
-    return new AdminEntity(admin.id, admin.name, admin.email, admin.isVerify, admin.deleted);
+    return AdminMapper.toDomain(admin);
   }
 
   async verifyEmail(dto: EmailVerifyDto): Promise<string> {
