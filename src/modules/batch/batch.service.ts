@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-plusplus */
@@ -7,14 +8,46 @@ import { BadRequestException } from '@app/core/exceptions/bad-request.exception'
 import { ExceptionConstants } from '@app/core/exceptions/constants';
 import { BatchMapper } from './mapper/batch.mapper';
 import { CreateBatchDto } from './dto/create-batch.dto';
-import { BatchEntity } from './entity/batch.entity';
+import { BatchEntity, PopulatedBatchEntity } from './entity/batch.entity';
 import { StoreToWarehouseDto } from './dto/store-to-warehouse.dto';
+import { FilterTypeEnum, GetBatchBySupplier } from './dto/get-batch-by-supplier.dto';
 
 @Injectable()
 export class BatchService {
   constructor(private readonly dbService: PrismaService) {}
 
-  async getBatchDetail(id: string) {
+  async getBatchBySupplier(dto: GetBatchBySupplier): Promise<PopulatedBatchEntity[]> {
+    try {
+      const filter = dto.filter === FilterTypeEnum.all ? {} : dto.filter === FilterTypeEnum.paid ? { paid: true } : { paid: false };
+      const batches = await this.dbService.batch.findMany({
+        where: {
+          supplierId: dto.supplierId,
+          ...filter,
+        },
+        include: {
+          items: {
+            include: {
+              rice: true,
+            },
+          },
+          creator: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: +dto.size,
+        skip: (+dto.page - 1) * +dto.size,
+      });
+      return BatchMapper.toDomainPopulatedArray(batches);
+    } catch (err) {
+      throw new BadRequestException({
+        message: err.message,
+        code: ExceptionConstants.BadRequestCodes.INVALID_INPUT,
+      });
+    }
+  }
+
+  async getBatchDetail(id: string): Promise<PopulatedBatchEntity> {
     try {
       const batch = await this.dbService.batch.findUnique({
         where: {

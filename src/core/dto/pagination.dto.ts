@@ -23,4 +23,8 @@ export class PaginationDto {
   @Max(100)
   @IsOptional()
   readonly size: number = 10;
+
+  public static offset(page: number, size: number): number {
+    return (page - 1) * size;
+  }
 }

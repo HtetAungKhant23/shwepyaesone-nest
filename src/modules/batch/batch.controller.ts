@@ -1,10 +1,11 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
 import { CurrentUser, IAuthUser } from '@app/core/decorators/auth.decorators';
 import { UserAuthGuard } from '../auth/guard/user.auth.guard';
 import { BatchService } from './batch.service';
 import { CreateBatchDto } from './dto/create-batch.dto';
 import { StoreToWarehouseDto } from './dto/store-to-warehouse.dto';
+import { GetBatchBySupplier } from './dto/get-batch-by-supplier.dto';
 
 @ApiTags('Batch')
 @Controller()
@@ -12,6 +13,20 @@ import { StoreToWarehouseDto } from './dto/store-to-warehouse.dto';
 @UseGuards(UserAuthGuard)
 export class BatchController {
   constructor(private readonly batchService: BatchService) {}
+
+  @Get('')
+  @HttpCode(HttpStatus.OK)
+  async getBatchBySupplier(@Query() query: GetBatchBySupplier) {
+    const batches = await this.batchService.getBatchBySupplier(query);
+    return {
+      _data: batches,
+      _metadata: {
+        success: true,
+        message: 'batch list successfully fetched.',
+        statusCode: HttpStatus.OK,
+      },
+    };
+  }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)

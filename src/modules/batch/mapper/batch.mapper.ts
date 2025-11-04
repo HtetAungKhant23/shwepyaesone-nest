@@ -52,6 +52,16 @@ export class BatchMapper {
     );
   }
 
+  static toDomainPopulatedArray(
+    prismaData: (Batch & {
+      items: (BatchItem & {
+        rice: Rice;
+      })[];
+    } & { creator: Admin })[],
+  ): PopulatedBatchEntity[] {
+    return prismaData.map(this.toDomainPopulated.bind(this));
+  }
+
   static toDomainBatchItem(prismaData: BatchItem & { rice: Rice }): BatchItemEntity {
     return new BatchItemEntity(
       prismaData.id,

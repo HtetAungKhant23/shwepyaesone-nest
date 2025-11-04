@@ -3,31 +3,26 @@ import { Injectable } from '@nestjs/common';
 import { BadRequestException } from '@app/core/exceptions/bad-request.exception';
 import { ExceptionConstants } from '@app/core/exceptions/constants';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
-import { PopulatedSupplierEntity, SupplierEntity } from './entity/supplier.entity';
+import { SupplierEntity } from './entity/supplier.entity';
 import { SupplierMapper } from './mapper/supplier.mapper';
 
 @Injectable()
 export class SupplierService {
   constructor(private readonly dbService: PrismaService) {}
 
-  async getAllSupplier(): Promise<PopulatedSupplierEntity[]> {
+  async getAllSupplier(): Promise<SupplierEntity[]> {
     try {
       const suppliers = await this.dbService.supplier.findMany({
         where: { deleted: false },
         include: {
           batch: {
-            include: {
-              items: {
-                select: {
-                  id: true,
-                },
-              },
-              creator: true,
+            select: {
+              id: true,
             },
           },
         },
       });
-      return SupplierMapper.toDomainPopulatedArray(suppliers);
+      return SupplierMapper.toDomainArray(suppliers);
     } catch (err) {
       throw new BadRequestException({
         message: err.message,
