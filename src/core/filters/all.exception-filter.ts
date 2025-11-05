@@ -22,10 +22,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const { httpAdapter } = this.httpAdapterHost;
     const specificException = exception as ErrorResponse;
     const ctx = host.switchToHttp();
-    // const request = ctx.getRequest<Request>();
+    const request = ctx.getRequest<Request>();
+    console.log({ request });
     const traceId = '';
     const httpStatus = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
-    // console.log(exception);
+    console.log({ exception });
     const responseBody = {
       _metadata: {
         success: false,

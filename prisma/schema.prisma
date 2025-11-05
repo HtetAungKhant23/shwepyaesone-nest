@@ -48,7 +48,6 @@ model Rice {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   batchItem             BatchItem[]
-  supplierPaymentItem   SupplierPaymentItem[]
   warehouseItem         WarehouseItem[]
   warehouseStockHistory WarehouseStockHistory[]
 
@@ -103,12 +102,13 @@ model BatchItem {
   paidQty     Int     @default(0) @map("paid_qty")
   paid        Boolean @default(false)
 
-  riceId    String   @map("rice_id")
-  rice      Rice     @relation(fields: [riceId], references: [id])
-  batchId   String   @map("batch_id")
-  batch     Batch    @relation(fields: [batchId], references: [id])
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  riceId              String                @map("rice_id")
+  rice                Rice                  @relation(fields: [riceId], references: [id])
+  batchId             String                @map("batch_id")
+  batch               Batch                 @relation(fields: [batchId], references: [id])
+  createdAt           DateTime              @default(now()) @map("created_at")
+  updatedAt           DateTime              @updatedAt @map("updated_at")
+  supplierPaymentItem SupplierPaymentItem[]
 
   @@map("batch_items")
 }
@@ -116,11 +116,11 @@ model BatchItem {
 model SupplierPayment {
   id String @id @default(uuid())
 
-  totalAmount  Int                   @default(0) @map("total_amount")
-  item         SupplierPaymentItem[]
-  note         String?
-  otherCharges Json?
-  paid         Boolean               @default(false)
+  totalAmount    Int                   @default(0) @map("total_amount")
+  item           SupplierPaymentItem[]
+  note           String?
+  serviceCharges Json
+  paid           Boolean               @default(false)
 
   batchId String @map("batch_id")
   batch   Batch  @relation(fields: [batchId], references: [id])
@@ -138,8 +138,8 @@ model SupplierPaymentItem {
 
   price             Int             @default(0)
   qty               Int             @default(0)
-  riceId            String          @map("rice_id")
-  rice              Rice            @relation(fields: [riceId], references: [id])
+  batchItemId       String          @map("batch_item_id")
+  batchItem         BatchItem       @relation(fields: [batchItemId], references: [id])
   supplierPaymentId String          @map("supplier_payment_id")
   supplierPayment   SupplierPayment @relation(fields: [supplierPaymentId], references: [id])
   createdAt         DateTime        @default(now()) @map("created_at")

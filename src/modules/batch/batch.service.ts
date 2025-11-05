@@ -8,7 +8,7 @@ import { BadRequestException } from '@app/core/exceptions/bad-request.exception'
 import { ExceptionConstants } from '@app/core/exceptions/constants';
 import { BatchMapper } from './mapper/batch.mapper';
 import { CreateBatchDto } from './dto/create-batch.dto';
-import { BatchEntity, PopulatedBatchEntity } from './entity/batch.entity';
+import { PopulatedBatchEntity } from './entity/batch.entity';
 import { StoreToWarehouseDto } from './dto/store-to-warehouse.dto';
 import { FilterTypeEnum, GetBatchBySupplier } from './dto/get-batch-by-supplier.dto';
 
@@ -75,7 +75,7 @@ export class BatchService {
     }
   }
 
-  async createBatch(dto: CreateBatchDto & { adminId: string }): Promise<BatchEntity> {
+  async createBatch(dto: CreateBatchDto & { adminId: string }): Promise<PopulatedBatchEntity> {
     try {
       const existBatches = await this.dbService.batch.count({
         where: {
@@ -113,14 +113,14 @@ export class BatchService {
         },
         include: {
           items: {
-            select: {
-              id: true,
+            include: {
+              rice: true,
             },
           },
           creator: true,
         },
       });
-      return BatchMapper.toDomain(batch);
+      return BatchMapper.toDomainPopulated(batch);
     } catch (err) {
       throw new BadRequestException({
         message: err.message,
