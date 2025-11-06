@@ -23,13 +23,10 @@ export class PaymentMapper {
       prismaData.id,
       prismaData.totalAmount,
       prismaData?.note || null,
-      prismaData.serviceCharges?.toString() || '',
-      prismaData?.otherExpenses ? prismaData.otherExpenses.toString() : null,
       prismaData.paid,
       AdminMapper.toDomain(prismaData.creator),
       SupplierMapper.toDomain(prismaData.batch.supplier),
-      prismaData.batchId,
-      prismaData.item.map((i) => i.id),
+      { id: prismaData.batch.id, batchNo: prismaData.batch.batchNo },
       prismaData.createdAt,
     );
   }

@@ -2,6 +2,11 @@
 import { AdminEntity } from '@app/modules/auth/entities/admin.entity';
 import { RiceEntity } from '@app/modules/rice/entity/rice.entity';
 
+export type BatchDto = {
+  id: string;
+  batchNo: string;
+};
+
 export class BaseBatch {
   id: string;
 
