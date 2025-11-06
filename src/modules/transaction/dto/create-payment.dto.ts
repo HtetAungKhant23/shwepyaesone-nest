@@ -36,6 +36,13 @@ export class CreatePaymentDto {
   }) // JSON
   serviceCharges: string;
 
+  @ApiProperty({
+    type: String,
+    example: `{\"skinCare\":300000,\"phoneCase\":15000}`,
+  }) // JSON
+  @IsOptional()
+  otherExpenses?: string;
+
   @ApiProperty({ type: Boolean, default: false })
   @IsNotEmpty()
   @IsBoolean()

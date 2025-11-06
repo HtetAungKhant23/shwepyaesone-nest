@@ -120,6 +120,7 @@ model SupplierPayment {
   item           SupplierPaymentItem[]
   note           String?
   serviceCharges Json
+  otherExpenses  Json?
   paid           Boolean               @default(false)
 
   batchId String @map("batch_id")

@@ -15,25 +15,12 @@ class BaseSupplier {
 }
 
 export class SupplierEntity extends BaseSupplier {
-  id: string;
-
-  name: string;
-
-  phone: string[];
-
-  address: string | null;
-
-  batch: string[];
-
-  createdAt: Date;
-
-  constructor(id: string, name: string, phone: string[], createdAt: Date, batch: string[], address: string | null) {
+  constructor(id: string, name: string, phone: string[], createdAt: Date, address: string | null) {
     super();
     this.id = id;
     this.name = name;
     this.phone = phone;
     this.address = address ?? null;
-    this.batch = batch;
     this.createdAt = createdAt;
   }
 }

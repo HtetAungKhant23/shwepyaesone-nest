@@ -2,7 +2,7 @@
 import { AdminEntity } from '@app/modules/auth/entities/admin.entity';
 import { RiceEntity } from '@app/modules/rice/entity/rice.entity';
 
-class BaseBatch {
+export class BaseBatch {
   id: string;
 
   batchNo: string;
@@ -13,13 +13,13 @@ class BaseBatch {
 
   storeInWarehouse: boolean;
 
-  creator: AdminEntity;
-
   createdAt: Date;
 }
 
 export class BatchEntity extends BaseBatch {
   items: string[];
+
+  creator: AdminEntity;
 
   constructor(
     id: string,
@@ -45,6 +45,8 @@ export class BatchEntity extends BaseBatch {
 
 export class PopulatedBatchEntity extends BaseBatch {
   items: BatchItemEntity[];
+
+  creator: AdminEntity;
 
   constructor(
     id: string,

@@ -3,21 +3,8 @@ import { BatchMapper } from '@app/modules/batch/mapper/batch.mapper';
 import { PopulatedSupplierEntity, SupplierEntity } from '../entity/supplier.entity';
 
 export class SupplierMapper {
-  static toDomain(
-    prismaData: Supplier & {
-      batch: {
-        id: string;
-      }[];
-    },
-  ): SupplierEntity {
-    return new SupplierEntity(
-      prismaData.id,
-      prismaData.name,
-      prismaData.phone,
-      prismaData.createdAt,
-      prismaData.batch.map((b) => b.id),
-      prismaData?.address || null,
-    );
+  static toDomain(prismaData: Supplier): SupplierEntity {
+    return new SupplierEntity(prismaData.id, prismaData.name, prismaData.phone, prismaData.createdAt, prismaData?.address || null);
   }
 
   static toDomainArray(prismaData: Supplier[]): SupplierEntity[] {
