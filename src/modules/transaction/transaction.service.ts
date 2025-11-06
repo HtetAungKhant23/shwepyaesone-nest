@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable @typescript-eslint/no-loop-func */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
@@ -5,10 +6,10 @@ import { PrismaService } from '@app/shared/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { BadRequestException } from '@app/core/exceptions/bad-request.exception';
 import { ExceptionConstants } from '@app/core/exceptions/constants';
-import { PaginationDto } from '@app/core/dto/pagination.dto';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { PaymentEntity, PopulatedPaymentEntity } from './entity/payment.entity';
 import { PaymentMapper } from './mapper/payment.mapper';
+import { FilterTypeEnum, GetAllTransactionDto } from './dto/get-all-transaction.dto';
 
 @Injectable()
 export class TransactionService {
@@ -50,9 +51,13 @@ export class TransactionService {
     }
   }
 
-  async getAllPayment(dto: PaginationDto): Promise<PaymentEntity[]> {
+  async getAllPayment(dto: GetAllTransactionDto): Promise<PaymentEntity[]> {
     try {
+      const filter = dto.filter === FilterTypeEnum.all ? {} : dto.filter === FilterTypeEnum.paid ? { paid: true } : { paid: false };
       const payments = await this.dbService.supplierPayment.findMany({
+        where: {
+          ...filter,
+        },
         include: {
           creator: true,
           batch: {

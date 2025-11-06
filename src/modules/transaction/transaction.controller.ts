@@ -1,10 +1,10 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
-import { PaginationDto } from '@app/core/dto/pagination.dto';
 import { CurrentUser, IAuthUser } from '@app/core/decorators/auth.decorators';
 import { TransactionService } from './transaction.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UserAuthGuard } from '../auth/guard/user.auth.guard';
+import { GetAllTransactionDto } from './dto/get-all-transaction.dto';
 
 @ApiTags('Transaction')
 @Controller()
@@ -15,7 +15,7 @@ export class TransactionController {
 
   @Get('payment')
   @HttpCode(HttpStatus.OK)
-  async getAllPayment(@Query() query: PaginationDto) {
+  async getAllPayment(@Query() query: GetAllTransactionDto) {
     const payments = await this.transactionService.getAllPayment(query);
     return {
       _data: payments,
