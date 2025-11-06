@@ -5,6 +5,8 @@ import { BaseBatch } from '@app/modules/batch/entity/batch.entity';
 import { BatchMapper } from '@app/modules/batch/mapper/batch.mapper';
 import { PaymentEntity, PaymentItemEntity, PopulatedPaymentEntity } from '../entity/payment.entity';
 
+// JSON.stringify(JSON.parse(prismaData?.serviceCharges?.toString() || '')),
+
 export class PaymentMapper {
   static toDomain(
     prismaData: SupplierPayment & {
@@ -21,8 +23,8 @@ export class PaymentMapper {
       prismaData.id,
       prismaData.totalAmount,
       prismaData?.note || null,
-      JSON.stringify(prismaData.serviceCharges),
-      prismaData?.otherExpenses ? JSON.stringify(prismaData.otherExpenses) : null,
+      prismaData.serviceCharges?.toString() || '',
+      prismaData?.otherExpenses ? prismaData.otherExpenses.toString() : null,
       prismaData.paid,
       AdminMapper.toDomain(prismaData.creator),
       SupplierMapper.toDomain(prismaData.batch.supplier),
@@ -69,8 +71,8 @@ export class PaymentMapper {
       prismaData.id,
       prismaData.totalAmount,
       prismaData?.note || null,
-      JSON.stringify(prismaData.serviceCharges),
-      prismaData?.otherExpenses ? JSON.stringify(prismaData.otherExpenses) : null,
+      prismaData.serviceCharges?.toString() || '',
+      prismaData?.otherExpenses ? prismaData.otherExpenses.toString() : null,
       prismaData.paid,
       AdminMapper.toDomain(prismaData.creator),
       SupplierMapper.toDomain(prismaData.batch.supplier),
