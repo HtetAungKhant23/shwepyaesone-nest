@@ -135,7 +135,7 @@ export class TransactionService {
         for (const item of items) {
           const batchItem = await tx.batchItem.findUnique({
             where: { id: item.batchItemId },
-            select: { totalStock: true, paidQty: true },
+            select: { totalStock: true, remainStock: true, paidQty: true },
           });
 
           if (!batchItem) {
@@ -143,6 +143,7 @@ export class TransactionService {
           }
 
           const newPaidQty: number = batchItem.paidQty + item.qty;
+          const newRemainStock: number = batchItem.remainStock - item.qty;
           const fullyPaid: boolean = newPaidQty >= batchItem.totalStock;
 
           await tx.supplierPaymentItem.create({
@@ -157,6 +158,7 @@ export class TransactionService {
           await tx.batchItem.update({
             where: { id: item.batchItemId },
             data: {
+              remainStock: newRemainStock,
               paidQty: newPaidQty,
               paid: fullyPaid,
             },
