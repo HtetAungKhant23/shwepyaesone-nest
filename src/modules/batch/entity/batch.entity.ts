@@ -5,6 +5,7 @@ import { RiceEntity } from '@app/modules/rice/entity/rice.entity';
 export type BatchDto = {
   id: string;
   batchNo: string;
+  storeInWarehouse: boolean;
 };
 
 export class BaseBatch {

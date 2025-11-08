@@ -26,7 +26,7 @@ export class PaymentMapper {
       prismaData.paid,
       AdminMapper.toDomain(prismaData.creator),
       SupplierMapper.toDomain(prismaData.batch.supplier),
-      { id: prismaData.batch.id, batchNo: prismaData.batch.batchNo },
+      { id: prismaData.batch.id, batchNo: prismaData.batch.batchNo, storeInWarehouse: prismaData.batch.storeInWarehouse },
       prismaData.createdAt,
     );
   }
